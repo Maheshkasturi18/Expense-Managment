@@ -1,0 +1,36 @@
+.bg-green {
+  background: linear-gradient(to left, #8e9395, #cfdae3);
+}
+
+.bg-gold {
+  border: 2px solid floralwhite;
+  border-radius: 20px;
+  background-color: #dfdfdf;
+}
+
+.min-vh-94 {
+  height: 94vh;
+}
+
+
+.content{
+  border: 2px solid floralwhite;
+  border-radius: 20px;
+  background-color: #dfdfdf;
+}
+
+.content .filter{
+  border: 2px solid floralwhite;
+  border-radius: 15px;
+}
+
+
+
+.content button{
+  border: 2px solid floralwhite;
+  border-radius: 15px;
+}
+
+.content .modal .modal-dialog .modal-content .btn-close{
+  font-size: 12px;
+}
