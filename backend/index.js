@@ -5,10 +5,10 @@ const mongoose = require("mongoose");
 app.use(cors());
 app.use(express.json());
 const PORT = process.env.Port || 8000;
-require("dotenv").config(); 
+require("dotenv").config();
 
 mongoose
-  .connect(process.env.DATABASE,)
+  .connect(process.env.DATABASE)
   .then(() => {
     console.log("mongo is connected");
   })
@@ -17,11 +17,11 @@ mongoose
 // Schema for users of app
 const UserSchema = new mongoose.Schema(
   {
-    Amount: Number,
-    Type: String,
-    Category: String,
-    Date: Number,
-    Reference:String
+    amount: Number,
+    type: String,
+    date: String,
+    category: String,
+    refrence: String,
   },
   {
     timestamps: true,

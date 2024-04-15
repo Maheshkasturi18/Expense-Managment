@@ -12,25 +12,56 @@
   height: 94vh;
 }
 
-
-.content{
+.content {
   border: 2px solid floralwhite;
   border-radius: 20px;
   background-color: #dfdfdf;
 }
 
-.content .filter{
+.content .filter {
   border: 2px solid floralwhite;
   border-radius: 15px;
 }
 
-
-
-.content button{
+.content button {
   border: 2px solid floralwhite;
   border-radius: 15px;
 }
 
-.content .modal .modal-dialog .modal-content .btn-close{
+.content .modal .modal-dialog .modal-content .btn-close {
   font-size: 12px;
+}
+
+.tableContainer {
+  margin-top: 50px;
+}
+
+.tableContainer table thead tr {
+  background-color: #f0aaaf;
+}
+
+.tableContainer table thead tr th,
+.tableContainer table tbody tr td {
+  max-width: 170px;
+  width: 5%;
+  padding: 10px;
+  text-align: center;
+}
+
+.tableContainer table tbody tr td {
+  border-bottom: 1px solid black;
+}
+
+.addconatiner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.addconatiner form {
+  /* width: 50%; */
+  background-color: aliceblue;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
 }

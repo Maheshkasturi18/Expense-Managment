@@ -1,7 +1,98 @@
-import React from "react";
-// import { Link } from "react";
+import { React, useState, useEffect } from "react";
+import axios from "axios";
+import { Form } from "./Form";
+
+axios.defaults.baseURL = "http://localhost:8000/";
 
 export default function Sidebar() {
+  const [addSection, setAddSection] = useState(false);
+  const [editSection, setEditSection] = useState(false);
+  const [formData, setFormData] = useState({
+    amount: "",
+    type: "",
+    date: "",
+    category: "",
+    refrence: "",
+  });
+  const [formDataEdit, setFormDataEdit] = useState({
+    amount: "",
+    type: "",
+    date: "",
+    category: "",
+    refrence: "",
+  });
+
+  const [dataList, setDataList] = useState([]);
+
+  const handleonChange = (e) => {
+    const { value, name } = e.target;
+    setFormData((prev) => {
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  };
+
+  // create data
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = await axios.post("/create", formData);
+    if (data.data.success) {
+      setAddSection(false);
+      alert(data.data.message);
+      getFetchData();
+    }
+  };
+
+  // get data
+  const getFetchData = async () => {
+    const data = await axios.get("/");
+    if (data.data.success) {
+      setDataList(data.data.data);
+    }
+  };
+
+  useEffect(() => {
+    getFetchData();
+  }, []);
+
+  // delete
+  const handleDelete = async (id) => {
+    const data = await axios.delete("/delete/" + id);
+
+    if (data.data.success) {
+      getFetchData();
+      alert(data.data.message);
+    }
+  };
+
+  // update
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const data = await axios.put("/update", formDataEdit);
+    if (data.data.success) {
+      getFetchData();
+      alert(data.data.message);
+      setEditSection(false);
+    }
+  };
+
+  const handleEditonChange = async (e) => {
+    const { value, name } = e.target;
+    setFormDataEdit((prev) => {
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  };
+
+  const handleEdit = (el) => {
+    setFormDataEdit(el);
+    setEditSection(true);
+  };
+
   return (
     <div className="container-fluid bg-green">
       <div className="row flex-nowrap p-lg-3 p-2">
@@ -140,103 +231,79 @@ export default function Sidebar() {
             </select>
 
             <button
-              type="button"
               className="btn px-3 py-1"
-              data-bs-toggle="modal"
-              data-bs-target="#staticBackdrop"
+              onClick={() => setAddSection(true)}
             >
               Add
             </button>
           </div>
 
           {/* modal - form */}
-          <div
-            className="modal fade"
-            id="staticBackdrop"
-            data-bs-backdrop="static"
-            data-bs-keyboard="false"
-            tabindex="-1"
-            aria-labelledby="staticBackdropLabel"
-            aria-hidden="true"
-          >
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header border-0 p-2">
-                  <button
-                    type="button"
-                    className="btn-close border-0 "
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <form action="">
-                    <div className="mb-3 d-grid">
-                      <label htmlFor="amount" className="mb-2">
-                        Amount
-                      </label>
-                      <input type="text" name="amount" className="p-1"/>
-                    </div>
+          {addSection && (
+            <Form
+              handleSubmit={handleSubmit}
+              handleonChange={handleonChange}
+              handleClose={() => setAddSection(false)}
+              rest={formData}
+            />
+          )}
 
-                    <div className="mb-3 d-grid">
-                      <label htmlFor="type" className="mb-2">
-                        Type
-                      </label>
-                      <select name="type" id="" type="text" className="p-1">
-                        <option value="">Select</option>
-                        <option value="">Income</option>
-                        <option value="">Expense</option>
-                      </select>
-                    </div>
-
-                    <div className="mb-3 d-grid">
-                      <label htmlFor="date" className="mb-2">
-                        Date
-                      </label>
-                      <input type="date" name="date" id="" className="p-1"/>
-                    </div>
-
-                    <div className="mb-3 d-grid">
-                      <label htmlFor="category" className="mb-2">
-                        Category
-                      </label>
-                      <select name="category" id="" type="text" className="p-1">
-                        <option value="">Select</option>
-                        <option value="">Salary</option>
-                        <option value="">Investment</option>
-                        <option value="">Stocks</option>
-                        <option value="">Fees</option>
-                        <option value="">Groceries</option>
-                        <option value="">Health</option>
-                        <option value="">Shopping</option>
-                        <option value="">Food</option>
-                        <option value="">other</option>
-                      </select>
-                    </div>
-
-                    <div className="mb-3 d-grid">
-                      <label htmlFor="reference" className="mb-2">
-                        Reference
-                      </label>
-                      <input type="text" placeholder="Add a reference" className="p-1"/>
-                    </div>
-                  </form>
-                </div>
-
-                <div className="modal-footer border-0 p-2">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          {editSection && (
+            <Form
+              handleSubmit={handleUpdate}
+              handleonChange={handleEditonChange}
+              handleClose={() => setEditSection(false)}
+              rest={formDataEdit}
+            />
+          )}
 
           {/*  */}
+
+          <div className="tableContainer">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Refrence</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataList[0] ? (
+                  dataList.map((el) => {
+                    return (
+                      <tr>
+                        <td>{el.date}</td>
+                        <td>{el.amount}</td>
+                        <td>{el.type}</td>
+                        <td>{el.category}</td>
+                        <td>{el.refrence}</td>
+                        <td>
+                          <button>
+                            <i
+                              class="fa-solid fa-pen"
+                              onClick={() => handleEdit(el)}
+                            ></i>
+                          </button>
+                          <button>
+                            <i
+                              class="fa-solid fa-trash "
+                              onClick={() => handleDelete(el._id)}
+                            ></i>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <p className="texxt-center">NO data</p>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
