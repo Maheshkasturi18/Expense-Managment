@@ -1,3 +1,4 @@
+/* common css */
 .bg-green {
   background: linear-gradient(to left, #8e9395, #cfdae3);
 }
@@ -9,9 +10,14 @@
 }
 
 .min-vh-94 {
-  height: 94vh;
+  min-height: 570px;
+    height: 100%;
 }
+/* common css */
 
+
+
+/*  */
 .content {
   border: 2px solid floralwhite;
   border-radius: 20px;
@@ -23,21 +29,31 @@
   border-radius: 15px;
 }
 
-.content button {
+.content div button {
   border: 2px solid floralwhite;
   border-radius: 15px;
 }
 
-.content .modal .modal-dialog .modal-content .btn-close {
-  font-size: 12px;
+.active-icon{
+  color: black ;
+  cursor: pointer;
 }
+.inactive-icon{
+  color: rgb(161, 161, 161) !important;
+  cursor: pointer;
+}
+/*  */
 
+
+/* table */
 .tableContainer {
   margin-top: 50px;
 }
 
 .tableContainer table thead tr {
-  background-color: #f0aaaf;
+  background-color: #e5daff;
+  border: 2px solid floralwhite;
+  border-radius: 20px !important;
 }
 
 .tableContainer table thead tr th,
@@ -49,19 +65,61 @@
 }
 
 .tableContainer table tbody tr td {
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid floralwhite;
+}
+/* table edn */
+
+/* form */
+.form-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid floralwhite;
+  max-width: 600px;
+  width: 90%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.addconatiner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.form-popup input[type="text"],
+.form-popup select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.addconatiner form {
-  /* width: 50%; */
-  background-color: aliceblue;
-  border: 1px solid black;
-  display: flex;
-  flex-direction: column;
+.form-popup .btn-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 12px;
 }
+/* form end*/
+
+/* overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 999; /* Ensure the overlay is above other content */
+  display: none; /* Initially hidden */
+}
+
+.overlay.active {
+  display: block;
+}
+/* overlay end */
+
+
+
+

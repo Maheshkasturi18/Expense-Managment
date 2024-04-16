@@ -7,6 +7,7 @@ axios.defaults.baseURL = "http://localhost:8000/";
 export default function Sidebar() {
   const [addSection, setAddSection] = useState(false);
   const [editSection, setEditSection] = useState(false);
+  const [viewData, setViewData] = useState('table');
   const [formData, setFormData] = useState({
     amount: "",
     type: "",
@@ -34,14 +35,28 @@ export default function Sidebar() {
     });
   };
 
+  const resetFormData = () => {
+    setFormData({
+      amount: "",
+      type: "",
+      date: "",
+      category: "",
+      refrence: "",
+    });
+  };
+
   // create data
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = await axios.post("/create", formData);
     if (data.data.success) {
       setAddSection(false);
       alert(data.data.message);
       getFetchData();
+
+      // reset from data after submiting
+      resetFormData();
     }
   };
 
@@ -93,9 +108,14 @@ export default function Sidebar() {
     setEditSection(true);
   };
 
+  const handlebutton = () => {
+    setAddSection(true);
+  };
+
   return (
     <div className="container-fluid bg-green">
-      <div className="row flex-nowrap p-lg-3 p-2">
+      {/* {addSection && <div className="overlay" onClick={() => setAddSection(false)}></div>} */}
+      <div className="row flex-nowrap p-lg-3 p-md-2 p-1 gap-1">
         <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-gold">
           <div className="d-flex flex-column align-items-center align-items-sm-start px-lg-3 px-2 pt-2 text-white min-vh-94">
             <a
@@ -103,137 +123,82 @@ export default function Sidebar() {
               className="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none"
             >
               <span className="fs-5 d-none d-sm-inline text-black fw-semibold">
-                Expense Tracker
+                E<span className="text-danger">x</span>pense Tracker
+              </span>
+
+              <span className="fs-5  text-black fw-semibold">
+                E<span className="text-danger">T</span>
               </span>
             </a>
             <ul
-              className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
+              className="nav nav-pills flex-column mb-auto   mt-2 align-items-center align-items-sm-start"
               id="menu"
             >
-              <li className="nav-item">
-                <a href="#" className="nav-link align-middle px-0">
-                  <i className="fs-4 bi-house"></i>
-                  <span className="ms-1 d-none d-sm-inline">Home</span>
-                </a>
-              </li>
               <li>
-                <a
-                  href="#submenu1"
-                  data-bs-toggle="collapse"
-                  className="nav-link px-0 align-middle"
-                >
-                  <i className="fs-4 bi-speedometer2"></i>
-                  <span className="ms-1 d-none d-sm-inline">Dashboard</span>
-                </a>
                 <ul
                   className="collapse show nav flex-column ms-1"
                   id="submenu1"
                   data-bs-parent="#menu"
                 >
                   <li className="w-100">
-                    <a href="#" className="nav-link px-0">
-                      <span className="d-none d-sm-inline">Item</span> 1
-                    </a>
+                    <h6  className={`nav-link px-0 ${viewData === 'table' ? "active-icon" : "active-icon"}`} onClick={()=> {setViewData("table")}}>
+                      <i class="fa-solid fa-table-columns "></i>
+                      <span className="d-none d-sm-inline  ms-2 fw-semibold">
+                        Dashboard
+                      </span>
+                    </h6>
                   </li>
                   <li>
-                    <a href="#" className="nav-link px-0">
-                      <span className="d-none d-sm-inline">Item</span> 2
-                    </a>
+                    <h6  className={`nav-link px-0 ${viewData === 'chart' ? "active-icon" : "active-icon"}`} onClick={()=> {setViewData("chart")}}>
+                      <i class="fa-solid fa-chart-line "></i>
+                      <span className="d-none d-sm-inline ms-2 fw-semibold">
+                        Chart
+                      </span>
+                    </h6>
                   </li>
                 </ul>
               </li>
 
               <li>
-                <a
-                  href="#submenu2"
-                  data-bs-toggle="collapse"
-                  className="nav-link px-0 align-middle "
-                >
-                  <i className="fs-4 bi-bootstrap"></i>
-                  <span className="ms-1 d-none d-sm-inline">Bootstrap</span>
-                </a>
-                <ul
-                  className="collapse nav flex-column ms-1"
-                  id="submenu2"
-                  data-bs-parent="#menu"
-                >
-                  <li className="w-100">
-                    <a href="#" className="nav-link px-0">
-                      <span className="d-none d-sm-inline">Item</span> 1
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="nav-link px-0">
-                      <span className="d-none d-sm-inline">Item</span> 2
-                    </a>
-                  </li>
-                </ul>
-              </li>
-
-              <li>
-                <a href="#" className="nav-link px-0 align-middle">
-                  <i className="fs-4 bi-people"></i>
-                  <span className="ms-1 d-none d-sm-inline">Customers</span>
+                <a href="/" className=" btn px-0">
+                  <i class="fa-solid fa-power-off text-danger"></i>
+                  <span className="d-none d-sm-inline text-black ms-2 fw-semibold">
+                    Log out
+                  </span>
                 </a>
               </li>
             </ul>
 
-            <div className="dropdown pb-4">
+            <div className="pb-4">
               <a
                 href="#"
-                className="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                id="dropdownUser1"
-                data-bs-toggle="dropdown"
+                className="d-flex align-items-center text-white text-decoration-none "
                 aria-expanded="false"
               >
                 <img
-                  src="https://github.com/mdo.png"
-                  alt="hugenerd"
-                  width="30"
-                  height="30"
+                  src="man.png"
+                  alt="login-icon"
+                  width="40"
+                  height="40"
                   className="rounded-circle"
                 />
-                <span className="d-none d-sm-inline mx-1">loser</span>
+                <span className="d-none d-sm-inline mx-1 text-black fw-semibold">
+                  Person 1
+                </span>
               </a>
-              <ul className="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li>
-                  <a className="dropdown-item" href="#">
-                    New project...
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Settings
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Profile
-                  </a>
-                </li>
-                <li></li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Sign out
-                  </a>
-                </li>
-              </ul>
             </div>
           </div>
         </div>
-        <div className="col ms-lg-3 ms-2 px-4 py-3 content">
+        <div className="col ms-lg-3 ms-md-2 px-md-4 px-2 py-3 content">
           <div className="d-flex justify-content-between align-items-center">
-            <select name="" id="" className="bg-transparent  p-2 filter">
+            <select name="" id="" className="bg-transparent p-1 p-md-2 filter">
               <option value="Default">Default</option>
               <option value="last 1 week">last 1 week</option>
               <option value="last 1 month">last 1 month</option>
               <option value="last 1 year">last 1 year</option>
             </select>
 
-            <button
-              className="btn px-3 py-1"
-              onClick={() => setAddSection(true)}
-            >
+            <button className="btn px-3 py-1" onClick={handlebutton}>
               Add
             </button>
           </div>
@@ -259,7 +224,7 @@ export default function Sidebar() {
 
           {/*  */}
 
-          <div className="tableContainer">
+          <div className="tableContainer d-none d-md-block">
             <table>
               <thead>
                 <tr>
@@ -282,15 +247,15 @@ export default function Sidebar() {
                         <td>{el.category}</td>
                         <td>{el.refrence}</td>
                         <td>
-                          <button>
+                          <button className="bg-transparent border-0 text-primary">
                             <i
-                              class="fa-solid fa-pen"
+                              className="fa-solid fa-pen  "
                               onClick={() => handleEdit(el)}
                             ></i>
                           </button>
-                          <button>
+                          <button className="bg-transparent border-0 text-danger">
                             <i
-                              class="fa-solid fa-trash "
+                              className="fa-solid fa-trash "
                               onClick={() => handleDelete(el._id)}
                             ></i>
                           </button>
@@ -299,7 +264,7 @@ export default function Sidebar() {
                     );
                   })
                 ) : (
-                  <p className="texxt-center">NO data</p>
+                  <p className="text-center">NO data</p>
                 )}
               </tbody>
             </table>
