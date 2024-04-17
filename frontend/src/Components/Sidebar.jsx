@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
 import { Form } from "./Form";
+import { Analytics } from "./Analytics";
 
 axios.defaults.baseURL = "http://localhost:8000/";
 
@@ -126,7 +127,7 @@ export default function Sidebar() {
                 E<span className="text-danger">x</span>pense Tracker
               </span>
 
-              <span className="fs-5  text-black fw-semibold">
+              <span className="fs-5 d-md-none text-black fw-semibold">
                 E<span className="text-danger">T</span>
               </span>
             </a>
@@ -141,7 +142,7 @@ export default function Sidebar() {
                   data-bs-parent="#menu"
                 >
                   <li className="w-100">
-                    <h6  className={`nav-link px-0 ${viewData === 'table' ? "active-icon" : "active-icon"}`} onClick={()=> {setViewData("table")}}>
+                    <h6  className={`nav-link px-0 ${viewData === 'table' ? "active-icon" : "inactive-icon"}`} onClick={()=> {setViewData("table")}}>
                       <i class="fa-solid fa-table-columns "></i>
                       <span className="d-none d-sm-inline  ms-2 fw-semibold">
                         Dashboard
@@ -149,7 +150,7 @@ export default function Sidebar() {
                     </h6>
                   </li>
                   <li>
-                    <h6  className={`nav-link px-0 ${viewData === 'chart' ? "active-icon" : "active-icon"}`} onClick={()=> {setViewData("chart")}}>
+                    <h6  className={`nav-link px-0 ${viewData === 'chart' ? "active-icon" : "inactive-icon"}`} onClick={()=> {setViewData("chart")}}>
                       <i class="fa-solid fa-chart-line "></i>
                       <span className="d-none d-sm-inline ms-2 fw-semibold">
                         Chart
@@ -224,7 +225,8 @@ export default function Sidebar() {
 
           {/*  */}
 
-          <div className="tableContainer d-none d-md-block">
+
+          { viewData === "table" ? <div className="tableContainer d-none d-md-block">
             <table>
               <thead>
                 <tr>
@@ -268,7 +270,8 @@ export default function Sidebar() {
                 )}
               </tbody>
             </table>
-          </div>
+          </div>  : <Analytics/>}
+          
         </div>
       </div>
     </div>
