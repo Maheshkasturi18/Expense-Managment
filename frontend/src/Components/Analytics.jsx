@@ -1,7 +1,7 @@
 import React from "react";
 import { Chart, ArcElement } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { LabelComponent } from "./Labels";
+import  Labels  from "./Labels";
 
 export const Analytics = () => {
   Chart.register(ArcElement);
@@ -28,18 +28,18 @@ export const Analytics = () => {
   };
   return (
     <div className="row py-4">
-    <div className="col-3">
-      <div className="analytics">
-        <Doughnut {...config}></Doughnut>
-        <h3 className="fw-semibold mb-4 text-center title">
+      <div className="col-3">
+        <div className="analytics mb-4">
+          <Doughnut {...config}></Doughnut>
+          <h3 className="fw-semibold mb-4 text-center title">
             Total <span className="fw-bold d-block text-success">₹{0}</span>
-        </h3>
-      </div>
+          </h3>
+        </div>
 
-      <div className="d-flex flex-column">
-        <LabelComponent/>
+        <div className="d-flex flex-column gap-3">
+          <Labels/>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
