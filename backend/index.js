@@ -14,8 +14,11 @@ mongoose
   })
   .catch((err) => console.log(err));
 
-// Schema for users of app
-const UserSchema = new mongoose.Schema(
+//
+//
+//
+// Schema for Expense Data of users
+const ExpenseSchema = new mongoose.Schema(
   {
     amount: Number,
     type: String,
@@ -28,18 +31,18 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-const userModel = mongoose.model("expenses", UserSchema);
+const expenseModel = mongoose.model("expenses", ExpenseSchema);
 
 // read data
 app.get("/", async (req, res) => {
-  const data = await userModel.find({});
+  const data = await expenseModel.find({});
   res.json({ success: true, data: data });
 });
 
 // create data
 app.post("/create", async (req, res) => {
   console.log(req.body);
-  const data = new userModel(req.body);
+  const data = new expenseModel(req.body);
   await data.save();
   res.send({ success: true, message: "Data saved successfully", data: data });
 });
@@ -48,7 +51,7 @@ app.post("/create", async (req, res) => {
 app.put("/update", async (req, res) => {
   console.log(req.body);
   const { _id, ...rest } = req.body;
-  const data = await userModel.updateOne({ _id: _id }, rest);
+  const data = await expenseModel.updateOne({ _id: _id }, rest);
   res.send({ success: true, message: "Data update successfully", data: data });
 });
 
@@ -56,8 +59,71 @@ app.put("/update", async (req, res) => {
 app.delete("/delete/:id", async (req, res) => {
   const id = req.params.id;
   console.log(id);
-  const data = await userModel.deleteOne({ _id: id });
+  const data = await expenseModel.deleteOne({ _id: id });
   res.send({ success: true, message: "Data deleted successfully", data: data });
 });
+//
+//
+//
+//
 
+// Login/register users schema
+//
+//
+const UserSchema = new mongoose.Schema(
+  {
+    name: String,
+    email: String,
+    password: String,
+  },
+  {
+    timestamps: true,
+  }
+);
+const userModel = mongoose.model("users", UserSchema);
+
+app.get("/api/users", async (req, res) => {
+  const user = await userModel.find({});
+  res.json({ success: true, data: user });
+});
+
+// create data for login
+app.post("/api/users/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email, password });
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User logged-in successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred during login. Please try again later.",
+    });
+  }
+});
+
+// create data for register
+app.post("/api/users/register", async (req, res) => {
+  const newUser = new userModel(req.body);
+  await newUser.save();
+  res.send({
+    success: true,
+    message: "User registered successfully",
+    data: newUser,
+  });
+});
+
+// listen port
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));

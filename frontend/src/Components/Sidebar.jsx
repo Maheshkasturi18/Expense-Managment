@@ -1,14 +1,32 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
 import { Form } from "./Form";
+import { Link, useNavigate } from "react-router-dom";
 import { Analytics } from "./Analytics";
 
 axios.defaults.baseURL = "http://localhost:8000/";
 
 export default function Sidebar() {
+  // user name to display after login
+  const navigate = useNavigate();
+  const [loginUser, setLoginUser] = useState("");
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setLoginUser(user);
+    }
+  }, []);
+
+  // logout
+  const logoutHandler = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   const [addSection, setAddSection] = useState(false);
   const [editSection, setEditSection] = useState(false);
-  const [viewData, setViewData] = useState('table');
+  const [viewData, setViewData] = useState("table");
   const [formData, setFormData] = useState({
     amount: "",
     type: "",
@@ -119,8 +137,8 @@ export default function Sidebar() {
       <div className="row flex-nowrap p-lg-3 p-md-2 p-1 gap-1">
         <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-gold">
           <div className="d-flex flex-column align-items-center align-items-sm-start px-lg-3 px-2 pt-2 text-white min-vh-94">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none"
             >
               <span className="fs-5 d-none d-sm-inline text-black fw-semibold">
@@ -130,7 +148,7 @@ export default function Sidebar() {
               <span className="fs-5 d-md-none text-black fw-semibold">
                 E<span className="text-danger">T</span>
               </span>
-            </a>
+            </Link>
             <ul
               className="nav nav-pills flex-column mb-auto   mt-2 align-items-center align-items-sm-start"
               id="menu"
@@ -142,16 +160,30 @@ export default function Sidebar() {
                   data-bs-parent="#menu"
                 >
                   <li className="w-100">
-                    <h6  className={`nav-link px-0 ${viewData === 'table' ? "active-icon" : "inactive-icon"}`} onClick={()=> {setViewData("table")}}>
-                      <i class="fa-solid fa-table-columns "></i>
+                    <h6
+                      className={`nav-link px-0 ${
+                        viewData === "table" ? "active-icon" : "inactive-icon"
+                      }`}
+                      onClick={() => {
+                        setViewData("table");
+                      }}
+                    >
+                      <i className="fa-solid fa-table-columns "></i>
                       <span className="d-none d-sm-inline  ms-2 fw-semibold">
                         Dashboard
                       </span>
                     </h6>
                   </li>
                   <li>
-                    <h6  className={`nav-link px-0 ${viewData === 'chart' ? "active-icon" : "inactive-icon"}`} onClick={()=> {setViewData("chart")}}>
-                      <i class="fa-solid fa-chart-line "></i>
+                    <h6
+                      className={`nav-link px-0 ${
+                        viewData === "chart" ? "active-icon" : "inactive-icon"
+                      }`}
+                      onClick={() => {
+                        setViewData("chart");
+                      }}
+                    >
+                      <i className="fa-solid fa-chart-line "></i>
                       <span className="d-none d-sm-inline ms-2 fw-semibold">
                         Chart
                       </span>
@@ -161,18 +193,18 @@ export default function Sidebar() {
               </li>
 
               <li>
-                <a href="/" className=" btn px-0">
-                  <i class="fa-solid fa-power-off text-danger"></i>
+                <button className=" btn px-0" onClick={logoutHandler}>
+                  <i className="fa-solid fa-power-off text-danger"></i>
                   <span className="d-none d-sm-inline text-black ms-2 fw-semibold">
                     Log out
                   </span>
-                </a>
+                </button>
               </li>
             </ul>
 
             <div className="pb-4">
-              <a
-                href="#"
+              <Link
+                to="/"
                 className="d-flex align-items-center text-white text-decoration-none "
                 aria-expanded="false"
               >
@@ -184,9 +216,9 @@ export default function Sidebar() {
                   className="rounded-circle"
                 />
                 <span className="d-none d-sm-inline mx-1 text-black fw-semibold">
-                  Person 1
+                  {loginUser && loginUser.name}
                 </span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -225,53 +257,55 @@ export default function Sidebar() {
 
           {/*  */}
 
-
-          { viewData === "table" ? <div className="tableContainer d-none d-md-block">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Type</th>
-                  <th>Category</th>
-                  <th>Refrence</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dataList[0] ? (
-                  dataList.map((el) => {
-                    return (
-                      <tr>
-                        <td>{el.date}</td>
-                        <td>{el.amount}</td>
-                        <td>{el.type}</td>
-                        <td>{el.category}</td>
-                        <td>{el.refrence}</td>
-                        <td>
-                          <button className="bg-transparent border-0 text-primary">
-                            <i
-                              className="fa-solid fa-pen  "
-                              onClick={() => handleEdit(el)}
-                            ></i>
-                          </button>
-                          <button className="bg-transparent border-0 text-danger">
-                            <i
-                              className="fa-solid fa-trash "
-                              onClick={() => handleDelete(el._id)}
-                            ></i>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <p className="text-center">NO data</p>
-                )}
-              </tbody>
-            </table>
-          </div>  : <Analytics/>}
-          
+          {viewData === "table" ? (
+            <div className="tableContainer d-none d-md-block">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Refrence</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataList[0] ? (
+                    dataList.map((el) => {
+                      return (
+                        <tr>
+                          <td>{el.date}</td>
+                          <td>{el.amount}</td>
+                          <td>{el.type}</td>
+                          <td>{el.category}</td>
+                          <td>{el.refrence}</td>
+                          <td>
+                            <button className="bg-transparent border-0 text-primary">
+                              <i
+                                className="fa-solid fa-pen  "
+                                onClick={() => handleEdit(el)}
+                              ></i>
+                            </button>
+                            <button className="bg-transparent border-0 text-danger">
+                              <i
+                                className="fa-solid fa-trash "
+                                onClick={() => handleDelete(el._id)}
+                              ></i>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <p className="text-center">NO data</p>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <Analytics />
+          )}
         </div>
       </div>
     </div>
