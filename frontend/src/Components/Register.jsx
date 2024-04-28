@@ -39,17 +39,19 @@ export default function Register() {
       const { success, message } = response.data;
 
       if (success) {
-        alert(message); // Consider using a more user-friendly notification method
+        alert(message); 
         navigate("/login");
         resetFormData();
       } else {
-        alert("Registration failed: " + message); // Handle server-side validation errors or other issues
+        alert("Registration failed: " + message); 
       }
     } catch (error) {
-      console.error("Registration failed:", error);
-      alert("Registration failed. Please try again later."); // Handle network errors or other unexpected issues
+      // console.error("Registration failed:", error);
+      alert("Registeration Failed. User already Registered !!!");
     }
   };
+
+
 
   return (
     <section className="container">

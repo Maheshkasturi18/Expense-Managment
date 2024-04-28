@@ -12,7 +12,7 @@ mongoose
   .then(() => {
     console.log("mongo is connected");
   })
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
 
 //
 //
@@ -35,8 +35,13 @@ const expenseModel = mongoose.model("expenses", ExpenseSchema);
 
 // read data
 app.get("/", async (req, res) => {
-  const data = await expenseModel.find({});
-  res.json({ success: true, data: data });
+  try {
+    const data = await expenseModel.find({});
+    res.json({ success: true, data: data });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ err: "Error fetching data" });
+  }
 });
 
 // create data
@@ -44,7 +49,7 @@ app.post("/create", async (req, res) => {
   console.log(req.body);
   const data = new expenseModel(req.body);
   await data.save();
-  res.send({ success: true, message: "Data saved successfully", data: data });
+  res.json({ success: true, message: "Data saved successfully", data: data });
 });
 
 // update data
@@ -52,7 +57,7 @@ app.put("/update", async (req, res) => {
   console.log(req.body);
   const { _id, ...rest } = req.body;
   const data = await expenseModel.updateOne({ _id: _id }, rest);
-  res.send({ success: true, message: "Data update successfully", data: data });
+  res.json({ success: true, message: "Data update successfully", data: data });
 });
 
 // delete data
@@ -60,7 +65,7 @@ app.delete("/delete/:id", async (req, res) => {
   const id = req.params.id;
   console.log(id);
   const data = await expenseModel.deleteOne({ _id: id });
-  res.send({ success: true, message: "Data deleted successfully", data: data });
+  res.json({ success: true, message: "Data deleted successfully", data: data });
 });
 //
 //
@@ -116,13 +121,26 @@ app.post("/api/users/login", async (req, res) => {
 
 // create data for register
 app.post("/api/users/register", async (req, res) => {
-  const newUser = new userModel(req.body);
-  await newUser.save();
-  res.send({
-    success: true,
-    message: "User registered successfully",
-    data: newUser,
-  });
+  const { name, email, password } = req.body;
+
+  try {
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already registered" });
+    }
+
+    const newUser = new userModel({ name, email, password });
+    await newUser.save();
+  } catch (error) {
+    console.error("Error during registration:", error);
+    res.json({
+      success: true,
+      message: "User registered successfully",
+      data: newUser,
+    });
+  }
 });
 
 // listen port

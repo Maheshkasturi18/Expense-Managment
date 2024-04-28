@@ -14,7 +14,14 @@ function App() {
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<Sidebar />}></Route>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoutes>
+                <Sidebar />
+              </ProtectedRoutes>
+            }
+          ></Route>
           <Route path="/register" element={<Register />}></Route>
           <Route path="/login" element={<Login />}></Route>
         </Routes>
@@ -24,7 +31,7 @@ function App() {
 }
 
 export function ProtectedRoutes(props) {
-  if (localStorage.getItem("users")) {
+  if (localStorage.getItem("user")) {
     return props.children;
   } else {
     return <Navigate to="/login" />;
