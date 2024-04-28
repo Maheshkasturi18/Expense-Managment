@@ -67,15 +67,21 @@ export default function Sidebar() {
   // create data
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const user = JSON.parse(localStorage.getItem("user"));
+    try {
+      const formDataWithUserId = { ...formData, userId: user._id };
+      const data = await axios.post("/create", formDataWithUserId);
+      if (data.data.success) {
+        setAddSection(false);
+        alert(data.data.message);
+        getFetchData();
 
-    const data = await axios.post("/create", formData);
-    if (data.data.success) {
-      setAddSection(false);
-      alert(data.data.message);
-      getFetchData();
-
-      // reset from data after submiting
-      resetFormData();
+        // reset from data after submiting
+        resetFormData();
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Fetching issue");
     }
   };
 

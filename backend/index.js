@@ -133,6 +133,11 @@ app.post("/api/users/register", async (req, res) => {
 
     const newUser = new userModel({ name, email, password });
     await newUser.save();
+    res.status(200).json({
+      success: true,
+      message: "User logged-in successfully",
+      data: newUser,
+    });
   } catch (error) {
     console.error("Error during registration:", error);
     res.json({

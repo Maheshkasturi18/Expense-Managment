@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -39,11 +39,11 @@ export default function Register() {
       const { success, message } = response.data;
 
       if (success) {
-        alert(message); 
+        alert(message);
         navigate("/login");
         resetFormData();
       } else {
-        alert("Registration failed: " + message); 
+        alert("Registration failed: " + message);
       }
     } catch (error) {
       // console.error("Registration failed:", error);
@@ -51,7 +51,11 @@ export default function Register() {
     }
   };
 
-
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   return (
     <section className="container">
