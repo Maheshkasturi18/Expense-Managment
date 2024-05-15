@@ -20,6 +20,7 @@ mongoose
 // Schema for Expense Data of users
 const ExpenseSchema = new mongoose.Schema(
   {
+    userid: String,
     amount: Number,
     type: String,
     date: String,
@@ -36,7 +37,7 @@ const expenseModel = mongoose.model("expenses", ExpenseSchema);
 // read data
 app.get("/", async (req, res) => {
   try {
-    const data = await expenseModel.find({});
+    const data = await expenseModel.find({ userid: req.query.userid });
     res.json({ success: true, data: data });
   } catch (err) {
     console.error(err);
@@ -55,8 +56,8 @@ app.post("/create", async (req, res) => {
 // update data
 app.put("/update", async (req, res) => {
   console.log(req.body);
-  const { _id, ...rest } = req.body;
-  const data = await expenseModel.updateOne({ _id: _id }, rest);
+  const { id, ...rest } = req.body;
+  const data = await expenseModel.updateOne({ _id: id }, rest);
   res.json({ success: true, message: "Data update successfully", data: data });
 });
 
@@ -105,7 +106,7 @@ app.post("/api/users/login", async (req, res) => {
         .json({ success: false, message: "Invalid email or password" });
     }
 
-    res.status(200).json({
+    res.json({
       success: true,
       message: "User logged-in successfully",
       data: user,

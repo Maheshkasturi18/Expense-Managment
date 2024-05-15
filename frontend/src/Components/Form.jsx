@@ -1,5 +1,6 @@
 import React from "react";
 
+
 export const Form = ({ handleSubmit, handleonChange, handleClose, rest }) => {
   return (
     <div className="form-popup d-block" id="myForm ">

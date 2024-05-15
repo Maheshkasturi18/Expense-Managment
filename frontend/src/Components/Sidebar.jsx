@@ -1,28 +1,32 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
 import { Form } from "./Form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Analytics } from "./Analytics";
+import { useAuth0 } from "@auth0/auth0-react";
 
 axios.defaults.baseURL = "http://localhost:8000/";
 
 export default function Sidebar() {
-  // user name to display after login
-  const navigate = useNavigate();
-  const [loginUser, setLoginUser] = useState("");
+  // auth0
+  const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      setLoginUser(user);
-    }
-  }, []);
+  // user name to display after login
+  // const navigate = useNavigate();
+  // const [loginUser, setLoginUser] = useState("");
+
+  // useEffect(() => {
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   if (user) {
+  //     setLoginUser(user);
+  //   }
+  // }, []);
 
   // logout
-  const logoutHandler = () => {
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
+  // const logoutHandler = () => {
+  //   localStorage.removeItem("user");
+  //   navigate("/login");
+  // };
 
   const [addSection, setAddSection] = useState(false);
   const [editSection, setEditSection] = useState(false);
@@ -69,7 +73,7 @@ export default function Sidebar() {
     e.preventDefault();
     const user = JSON.parse(localStorage.getItem("user"));
     try {
-      const formDataWithUserId = { ...formData, userId: user._id };
+      const formDataWithUserId = { ...formData, userid: user._id };
       const data = await axios.post("/create", formDataWithUserId);
       if (data.data.success) {
         setAddSection(false);
@@ -87,9 +91,15 @@ export default function Sidebar() {
 
   // get data
   const getFetchData = async () => {
-    const data = await axios.get("/");
-    if (data.data.success) {
-      setDataList(data.data.data);
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const data = await axios.get("/", { params: { userid: user._id } });
+      if (data.data.success) {
+        setDataList(data.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Fetching issue");
     }
   };
 
@@ -136,6 +146,9 @@ export default function Sidebar() {
   const handlebutton = () => {
     setAddSection(true);
   };
+
+  // auth0
+  // const userName = user.name || user.nickname || "User";
 
   return (
     <div className="container-fluid bg-green">
@@ -198,34 +211,57 @@ export default function Sidebar() {
                 </ul>
               </li>
 
-              <li>
-                <button className=" btn px-0" onClick={logoutHandler}>
+              {isAuthenticated ? (
+                <li>
+                  <button
+                    className=" btn px-0"
+                    onClick={() =>
+                      logout({
+                        logoutParams: { returnTo: window.location.origin },
+                      })
+                    }
+                  >
+                    Log Out
+                  </button>
+                </li>
+              ) : (
+                <li>
+                  {/* <button className=" btn px-0" onClick={logoutHandler}>
                   <i className="fa-solid fa-power-off text-danger"></i>
                   <span className="d-none d-sm-inline text-black ms-2 fw-semibold">
-                    Log out
+                    Logout
                   </span>
-                </button>
-              </li>
+                </button> */}
+                  <button
+                    className=" btn px-0"
+                    onClick={() => loginWithRedirect()}
+                  >
+                    Log In
+                  </button>
+                </li>
+              )}
             </ul>
 
-            <div className="pb-4">
-              <Link
-                to="/"
-                className="d-flex align-items-center text-white text-decoration-none "
-                aria-expanded="false"
-              >
-                <img
-                  src="man.png"
-                  alt="login-icon"
-                  width="40"
-                  height="40"
-                  className="rounded-circle"
-                />
-                <span className="d-none d-sm-inline mx-1 text-black fw-semibold">
-                  {loginUser && loginUser.name}
-                </span>
-              </Link>
-            </div>
+            {isAuthenticated && (
+              <div className="pb-4">
+                <Link
+                  to="/"
+                  className="d-flex align-items-center text-white text-decoration-none "
+                  aria-expanded="false"
+                >
+                  <img
+                    src="man.png"
+                    alt="login-icon"
+                    width="40"
+                    height="40"
+                    className="rounded-circle"
+                  />
+                  <span className="d-none d-sm-inline mx-1 text-black fw-semibold">
+                    {user.nickname}
+                  </span>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
         <div className="col ms-lg-3 ms-md-2 px-md-4 px-2 py-3 content">
