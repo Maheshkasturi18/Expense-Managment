@@ -152,7 +152,6 @@ export default function Sidebar() {
 
   return (
     <div className="container-fluid bg-green">
-      {/* {addSection && <div className="overlay" onClick={() => setAddSection(false)}></div>} */}
       <div className="row flex-nowrap p-lg-3 p-md-2 p-1 gap-1">
         <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-gold">
           <div className="d-flex flex-column align-items-center align-items-sm-start px-lg-3 px-2 pt-2 text-white min-vh-94">
@@ -221,7 +220,10 @@ export default function Sidebar() {
                       })
                     }
                   >
-                    Log Out
+                    <i className="fa-solid fa-power-off text-danger"></i>
+                    <span className="d-none d-sm-inline text-black ms-2 fw-semibold">
+                      Log Out
+                    </span>
                   </button>
                 </li>
               ) : (
@@ -236,7 +238,10 @@ export default function Sidebar() {
                     className=" btn px-0"
                     onClick={() => loginWithRedirect()}
                   >
-                    Log In
+                    <i className="fa-solid fa-power-off text-danger"></i>
+                    <span className="d-none d-sm-inline text-black ms-2 fw-semibold">
+                      Log In
+                    </span>
                   </button>
                 </li>
               )}
@@ -273,7 +278,10 @@ export default function Sidebar() {
               <option value="last 1 year">last 1 year</option>
             </select>
 
-            <button className="btn px-3 py-1" onClick={handlebutton}>
+            <button
+              className="btn px-3 py-1 border border-2 border-white  rounded-4"
+              onClick={handlebutton}
+            >
               Add
             </button>
           </div>
@@ -312,37 +320,42 @@ export default function Sidebar() {
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {dataList[0] ? (
-                    dataList.map((el) => {
-                      return (
-                        <tr>
-                          <td>{el.date}</td>
-                          <td>{el.amount}</td>
-                          <td>{el.type}</td>
-                          <td>{el.category}</td>
-                          <td>{el.refrence}</td>
-                          <td>
-                            <button className="bg-transparent border-0 text-primary">
-                              <i
-                                className="fa-solid fa-pen  "
-                                onClick={() => handleEdit(el)}
-                              ></i>
-                            </button>
-                            <button className="bg-transparent border-0 text-danger">
-                              <i
-                                className="fa-solid fa-trash "
-                                onClick={() => handleDelete(el._id)}
-                              ></i>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <p className="text-center">NO data</p>
-                  )}
-                </tbody>
+
+                {isAuthenticated ? (
+                  <tbody>
+                    {dataList[0] ? (
+                      dataList.map((el) => {
+                        return (
+                          <tr>
+                            <td>{el.date}</td>
+                            <td>{el.amount}</td>
+                            <td>{el.type}</td>
+                            <td>{el.category}</td>
+                            <td>{el.refrence}</td>
+                            <td>
+                              <button className="bg-transparent border-0 text-primary">
+                                <i
+                                  className="fa-solid fa-pen  "
+                                  onClick={() => handleEdit(el)}
+                                ></i>
+                              </button>
+                              <button className="bg-transparent border-0 text-danger">
+                                <i
+                                  className="fa-solid fa-trash "
+                                  onClick={() => handleDelete(el._id)}
+                                ></i>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <p className="text-center">Add data</p>
+                    )}
+                  </tbody>
+                ) : (
+                  <div style={{ textAlign: "center" }}>Login to see data</div>
+                )}
               </table>
             </div>
           ) : (
