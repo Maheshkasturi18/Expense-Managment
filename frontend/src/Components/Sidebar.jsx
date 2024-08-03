@@ -10,24 +10,6 @@ axios.defaults.baseURL = "http://localhost:8000/";
 export default function Sidebar() {
   // auth0
   const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
-
-  // user name to display after login
-  // const navigate = useNavigate();
-  // const [loginUser, setLoginUser] = useState("");
-
-  // useEffect(() => {
-  //   const user = JSON.parse(localStorage.getItem("user"));
-  //   if (user) {
-  //     setLoginUser(user);
-  //   }
-  // }, []);
-
-  // logout
-  // const logoutHandler = () => {
-  //   localStorage.removeItem("user");
-  //   navigate("/login");
-  // };
-
   const [addSection, setAddSection] = useState(false);
   const [editSection, setEditSection] = useState(false);
   const [viewData, setViewData] = useState("table");
@@ -228,12 +210,6 @@ export default function Sidebar() {
                 </li>
               ) : (
                 <li>
-                  {/* <button className=" btn px-0" onClick={logoutHandler}>
-                  <i className="fa-solid fa-power-off text-danger"></i>
-                  <span className="d-none d-sm-inline text-black ms-2 fw-semibold">
-                    Logout
-                  </span>
-                </button> */}
                   <button
                     className=" btn px-0"
                     onClick={() => loginWithRedirect()}

@@ -17,9 +17,6 @@ mongoose
   })
   .catch((err) => console.error(err));
 
-//
-//
-//
 // Schema for Expense Data of users
 const ExpenseSchema = new mongoose.Schema(
   {
@@ -71,14 +68,7 @@ app.delete("/delete/:id", async (req, res) => {
   const data = await expenseModel.deleteOne({ _id: id });
   res.json({ success: true, message: "Data deleted successfully", data: data });
 });
-//
-//
-//
-//
 
-// Login/register users schema
-//
-//
 const UserSchema = new mongoose.Schema(
   {
     name: String,
@@ -91,66 +81,59 @@ const UserSchema = new mongoose.Schema(
 );
 const userModel = mongoose.model("users", UserSchema);
 
-app.get("/api/users", async (req, res) => {
-  const user = await userModel.find({});
-  res.json({ success: true, data: user });
-});
+// app.get("/api/users", async (req, res) => {
+//   const user = await userModel.find({});
+//   res.json({ success: true, data: user });
+// });
 
-// create data for login
-app.post("/api/users/login", async (req, res) => {
-  const { email, password } = req.body;
+// app.get("/api/users", async (req, res) => {
+//   try {
+//     const user = await userModel.findOne({ auth0Id: req.user.sub });
+//     if (!user) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "User not found" });
+//     }
+//     res.json({ success: true, data: user });
+//   } catch (error) {
+//     console.error("Error fetching user data:", error);
+//     res.status(500).json({
+//       success: false,
+//       message:
+//         "An error occurred while fetching user data. Please try again later.",
+//     });
+//   }
+// });
 
-  try {
-    const user = await userModel.findOne({ email, password });
+// app.post("/api/users/auth", async (req, res) => {
+//   try {
+//     const { sub: auth0Id, name, email } = req.user;
 
-    if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Invalid email or password" });
-    }
+//     let user = await userModel.findOne({ auth0Id });
 
-    res.json({
-      success: true,
-      message: "User logged-in successfully",
-      data: user,
-    });
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred during login. Please try again later.",
-    });
-  }
-});
+//     if (!user) {
+//       user = new userModel({ name, email, auth0Id });
+//       await user.save();
+//     } else {
+//       user.name = name || user.name;
+//       user.email = email || user.email;
+//       await user.save();
+//     }
 
-// create data for register
-app.post("/api/users/register", async (req, res) => {
-  const { name, email, password } = req.body;
-
-  try {
-    const existingUser = await userModel.findOne({ email });
-    if (existingUser) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email already registered" });
-    }
-
-    const newUser = new userModel({ name, email, password });
-    await newUser.save();
-    res.status(200).json({
-      success: true,
-      message: "User logged-in successfully",
-      data: newUser,
-    });
-  } catch (error) {
-    console.error("Error during registration:", error);
-    res.json({
-      success: true,
-      message: "User registered successfully",
-      data: newUser,
-    });
-  }
-});
+//     res.status(200).json({
+//       success: true,
+//       message: "User authenticated successfully",
+//       data: user,
+//     });
+//   } catch (error) {
+//     console.error("Error during authentication:", error);
+//     res.status(500).json({
+//       success: false,
+//       message:
+//         "An error occurred during authentication. Please try again later.",
+//     });
+//   }
+// });
 
 // listen port
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));

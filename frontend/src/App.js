@@ -1,6 +1,5 @@
+import React from "react";
 import "./App.css";
-import Login from "./Components/Login";
-import Register from "./Components/Register";
 import Sidebar from "./Components/Sidebar";
 import {
   BrowserRouter as Router,
@@ -11,31 +10,13 @@ import {
 
 function App() {
   return (
-    <div>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoutes>
-                <Sidebar />
-              </ProtectedRoutes>
-            }
-          ></Route>
-          <Route path="/register" element={<Register />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-        </Routes>
-      </Router>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Sidebar />}></Route>
+      </Routes>
+    </Router>
   );
 }
 
-export function ProtectedRoutes(props) {
-  if (localStorage.getItem("user")) {
-    return props.children;
-  } else {
-    return <Navigate to="/login" />;
-  }
-}
 
 export default App;

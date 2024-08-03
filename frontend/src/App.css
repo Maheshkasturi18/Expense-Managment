@@ -10,7 +10,7 @@
 }
 
 .min-vh-94 {
-  min-height: 570px;
+  min-height: 605px;
   height: 100%;
 }
 
@@ -82,7 +82,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 2px solid floralwhite;
+  box-shadow: 5px 10px 20px 1px black;
   max-width: 450px;
   width: 90%;
   background-color: #ffffff5e;
