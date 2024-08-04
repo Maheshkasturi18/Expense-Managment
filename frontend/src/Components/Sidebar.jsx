@@ -26,6 +26,8 @@ export default function Sidebar() {
     date: "",
     category: "",
     refrence: "",
+    email: "",
+    userEmail: "",
   });
 
   const [dataList, setDataList] = useState([]);
@@ -53,16 +55,15 @@ export default function Sidebar() {
   // create data
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = JSON.parse(localStorage.getItem("user"));
+    // const user = JSON.parse(localStorage.getItem("user"));
     try {
-      const formDataWithUserId = { ...formData, userid: user._id };
-      const data = await axios.post("/create", formDataWithUserId);
+      const formDataWithUserEmail = { ...formData, userEmail: user.email };
+      const data = await axios.post("/create", formDataWithUserEmail);
       if (data.data.success) {
         setAddSection(false);
         alert(data.data.message);
         getFetchData();
-
-        // reset from data after submiting
+        console.log("data", data);
         resetFormData();
       }
     } catch (error) {
@@ -74,10 +75,11 @@ export default function Sidebar() {
   // get data
   const getFetchData = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const data = await axios.get("/", { params: { userid: user._id } });
-      if (data.data.success) {
-        setDataList(data.data.data);
+      const response = await axios.get("/", {
+        params: { userEmail: user.email },
+      });
+      if (response.data.success) {
+        setDataList(response.data.data);
       }
     } catch (err) {
       console.log(err);
@@ -86,27 +88,39 @@ export default function Sidebar() {
   };
 
   useEffect(() => {
-    getFetchData();
-  }, []);
+    if (isAuthenticated) {
+      getFetchData();
+    }
+  }, [isAuthenticated]);
 
   // delete
-  const handleDelete = async (id) => {
-    const data = await axios.delete("/delete/" + id);
-
-    if (data.data.success) {
-      getFetchData();
-      alert(data.data.message);
+  const handleDelete = async (userEmail) => {
+    try {
+      const response = await axios.delete(`/delete/${userEmail}`);
+      if (response.data.success) {
+        getFetchData();
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Fetching issue");
     }
   };
 
   // update
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const data = await axios.put("/update", formDataEdit);
-    if (data.data.success) {
-      getFetchData();
-      alert(data.data.message);
-      setEditSection(false);
+    try {
+      const response = await axios.put("/update", formDataEdit);
+      if (response.data.success) {
+        getFetchData();
+        alert(response.data.message);
+        console.log("updated", response.data);
+        setEditSection(false);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Fetching issue");
     }
   };
 
@@ -318,7 +332,7 @@ export default function Sidebar() {
                               <button className="bg-transparent border-0 text-danger">
                                 <i
                                   className="fa-solid fa-trash "
-                                  onClick={() => handleDelete(el._id)}
+                                  onClick={() => handleDelete(el.userEmail)}
                                 ></i>
                               </button>
                             </td>

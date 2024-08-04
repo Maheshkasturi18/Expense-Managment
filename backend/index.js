@@ -20,7 +20,7 @@ mongoose
 // Schema for Expense Data of users
 const ExpenseSchema = new mongoose.Schema(
   {
-    userid: String,
+    userEmail: String,
     amount: Number,
     type: String,
     date: String,
@@ -37,8 +37,9 @@ const expenseModel = mongoose.model("expenses", ExpenseSchema);
 // read data
 app.get("/", async (req, res) => {
   try {
-    const data = await expenseModel.find({ userid: req.query.userid });
-    res.json({ success: true, data: data });
+    const { userEmail } = req.query;
+    const expenses = await expenseModel.find({ userEmail });
+    res.json({ success: true, data: expenses });
   } catch (err) {
     console.error(err);
     res.status(400).json({ err: "Error fetching data" });
@@ -47,93 +48,49 @@ app.get("/", async (req, res) => {
 
 // create data
 app.post("/create", async (req, res) => {
-  console.log(req.body);
-  const data = new expenseModel(req.body);
-  await data.save();
-  res.json({ success: true, message: "Data saved successfully", data: data });
+  try {
+    const data = new expenseModel(req.body);
+    await data.save();
+    res.json({ success: true, message: "Data saved successfully", data: data });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ err: "Error saving data" });
+  }
 });
 
 // update data
 app.put("/update", async (req, res) => {
-  console.log(req.body);
-  const { id, ...rest } = req.body;
-  const data = await expenseModel.updateOne({ _id: id }, rest);
-  res.json({ success: true, message: "Data update successfully", data: data });
+  try {
+    const { userEmail, ...rest } = req.body;
+    const data = await expenseModel.findOneAndUpdate({ userEmail }, rest, {
+      new: true,
+    });
+    res.json({
+      success: true,
+      message: "Data updated successfully",
+      data: data,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ err: "Error updating data" });
+  }
 });
 
 // delete data
-app.delete("/delete/:id", async (req, res) => {
-  const id = req.params.id;
-  console.log(id);
-  const data = await expenseModel.deleteOne({ _id: id });
-  res.json({ success: true, message: "Data deleted successfully", data: data });
-});
-
-const UserSchema = new mongoose.Schema(
-  {
-    name: String,
-    email: String,
-    password: String,
-  },
-  {
-    timestamps: true,
+app.delete("/delete/:userEmail", async (req, res) => {
+  try {
+    const userEmail = req.params;
+    const data = await expenseModel.deleteOne({ userEmail });
+    res.json({
+      success: true,
+      message: "Data deleted successfully",
+      data: data,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ err: "Error deleting data" });
   }
-);
-const userModel = mongoose.model("users", UserSchema);
-
-// app.get("/api/users", async (req, res) => {
-//   const user = await userModel.find({});
-//   res.json({ success: true, data: user });
-// });
-
-// app.get("/api/users", async (req, res) => {
-//   try {
-//     const user = await userModel.findOne({ auth0Id: req.user.sub });
-//     if (!user) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found" });
-//     }
-//     res.json({ success: true, data: user });
-//   } catch (error) {
-//     console.error("Error fetching user data:", error);
-//     res.status(500).json({
-//       success: false,
-//       message:
-//         "An error occurred while fetching user data. Please try again later.",
-//     });
-//   }
-// });
-
-// app.post("/api/users/auth", async (req, res) => {
-//   try {
-//     const { sub: auth0Id, name, email } = req.user;
-
-//     let user = await userModel.findOne({ auth0Id });
-
-//     if (!user) {
-//       user = new userModel({ name, email, auth0Id });
-//       await user.save();
-//     } else {
-//       user.name = name || user.name;
-//       user.email = email || user.email;
-//       await user.save();
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       message: "User authenticated successfully",
-//       data: user,
-//     });
-//   } catch (error) {
-//     console.error("Error during authentication:", error);
-//     res.status(500).json({
-//       success: false,
-//       message:
-//         "An error occurred during authentication. Please try again later.",
-//     });
-//   }
-// });
+});
 
 // listen port
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));
