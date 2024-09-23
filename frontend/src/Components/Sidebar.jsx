@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Analytics } from "./Analytics";
 import { useAuth0 } from "@auth0/auth0-react";
 
-axios.defaults.baseURL = "http://localhost:8000/";
+axios.defaults.baseURL = "https://expense-managment-clqt.onrender.com/";
 
 export default function Sidebar() {
   // auth0
