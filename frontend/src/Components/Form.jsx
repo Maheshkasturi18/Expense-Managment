@@ -88,9 +88,9 @@ export const Form = ({ handleSubmit, handleonChange, handleClose, rest }) => {
               </select>
             </div>
 
-            <div className="mb-lg-3 mb-md-2 mb-1 d-grid">
+            <div className="mb-lg-3 mb-2 d-grid">
               <label htmlFor="refrence" className=" mb-1">
-                Refrence
+                Reference
               </label>
               <input
                 type="text"

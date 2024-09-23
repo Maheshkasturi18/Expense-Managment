@@ -31,6 +31,8 @@ export default function Sidebar() {
   });
 
   const [dataList, setDataList] = useState([]);
+  const [filter, setFilter] = useState("Default");
+  const [filteredData, setFilteredData] = useState([]);
 
   const handleonChange = (e) => {
     const { value, name } = e.target;
@@ -80,6 +82,8 @@ export default function Sidebar() {
       });
       if (response.data.success) {
         setDataList(response.data.data);
+        setFilteredData(response.data.data);
+        console.log(response.data.data);
       }
     } catch (err) {
       console.log(err);
@@ -146,20 +150,51 @@ export default function Sidebar() {
   // auth0
   // const userName = user.name || user.nickname || "User";
 
+  // filter logic
+  const handleFilterChange = (event) => {
+    const selectedFilter = event.target.value;
+    setFilter(selectedFilter);
+    applyFilter(selectedFilter);
+  };
+
+  // Apply filter logic based on the selected option
+  const applyFilter = (selectedFilter) => {
+    const now = new Date();
+    let filtered = dataList;
+
+    if (selectedFilter === "last 1 week") {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(now.getDate() - 7);
+      filtered = dataList.filter((item) => new Date(item.date) >= oneWeekAgo);
+    } else if (selectedFilter === "last 1 month") {
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(now.getMonth() - 1);
+      filtered = dataList.filter((item) => new Date(item.date) >= oneMonthAgo);
+    } else if (selectedFilter === "last 1 year") {
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(now.getFullYear() - 1);
+      filtered = dataList.filter((item) => new Date(item.date) >= oneYearAgo);
+    } else {
+      filtered = dataList;
+    }
+
+    setFilteredData(filtered);
+  };
+
   return (
-    <div className="container-fluid bg-green">
+    <div className="container-fluid bg-green overflow-auto">
       <div className="row flex-nowrap p-lg-3 p-md-2 p-1 gap-1">
-        <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-gold">
+        <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-gold ">
           <div className="d-flex flex-column align-items-center align-items-sm-start px-lg-3 px-2 pt-2 text-white min-vh-94">
             <Link
               to="/"
               className="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none"
             >
-              <span className="fs-5 d-none d-sm-inline text-black fw-semibold">
+              <span className="fs-5 d-none d-md-block text-black fw-semibold">
                 E<span className="text-danger">x</span>pense Tracker
               </span>
 
-              <span className="fs-5 d-md-none text-black fw-semibold">
+              <span className="fs-5 d-md-none d-block text-black fw-semibold">
                 E<span className="text-danger">T</span>
               </span>
             </Link>
@@ -259,9 +294,15 @@ export default function Sidebar() {
             )}
           </div>
         </div>
-        <div className="col ms-lg-3 ms-md-2 px-md-4 px-2 py-3 content">
+        <div className="col ms-lg-3 ms-md-2 px-md-4 px-2 py-3 content  scrollable">
           <div className="d-flex justify-content-between align-items-center">
-            <select name="" id="" className="bg-transparent p-1 p-md-2 filter">
+            <select
+              name=""
+              id=""
+              className="bg-transparent p-1 p-md-2 filter"
+              value={filter}
+              onChange={handleFilterChange}
+            >
               <option value="Default">Default</option>
               <option value="last 1 week">last 1 week</option>
               <option value="last 1 month">last 1 month</option>
@@ -298,7 +339,7 @@ export default function Sidebar() {
           {/*  */}
 
           {viewData === "table" ? (
-            <div className="tableContainer d-none d-md-block">
+            <div className="tableContainer overflow-auto">
               <table>
                 <thead>
                   <tr>
@@ -306,41 +347,39 @@ export default function Sidebar() {
                     <th>Amount</th>
                     <th>Type</th>
                     <th>Category</th>
-                    <th>Refrence</th>
+                    <th>Reference</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
 
                 {isAuthenticated ? (
                   <tbody>
-                    {dataList[0] ? (
-                      dataList.map((el) => {
-                        return (
-                          <tr>
-                            <td>{el.date}</td>
-                            <td>{el.amount}</td>
-                            <td>{el.type}</td>
-                            <td>{el.category}</td>
-                            <td>{el.refrence}</td>
-                            <td>
-                              <button className="bg-transparent border-0 text-primary">
-                                <i
-                                  className="fa-solid fa-pen  "
-                                  onClick={() => handleEdit(el)}
-                                ></i>
-                              </button>
-                              <button className="bg-transparent border-0 text-danger">
-                                <i
-                                  className="fa-solid fa-trash "
-                                  onClick={() => handleDelete(el.userEmail)}
-                                ></i>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })
+                    {filteredData.length > 0 ? (
+                      filteredData.map((el) => (
+                        <tr key={el.id}>
+                          <td>{el.date}</td>
+                          <td>{el.amount}</td>
+                          <td>{el.type}</td>
+                          <td>{el.category}</td>
+                          <td>{el.refrence}</td>
+                          <td>
+                            <button className="bg-transparent border-0 text-primary">
+                              <i
+                                className="fa-solid fa-pen"
+                                onClick={() => handleEdit(el)}
+                              ></i>
+                            </button>
+                            <button className="bg-transparent border-0 text-danger">
+                              <i
+                                className="fa-solid fa-trash"
+                                onClick={() => handleDelete(el.userEmail)}
+                              ></i>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
                     ) : (
-                      <p className="text-center">Add data</p>
+                      <p className="text-center">No data available</p>
                     )}
                   </tbody>
                 ) : (
@@ -349,7 +388,7 @@ export default function Sidebar() {
               </table>
             </div>
           ) : (
-            <Analytics />
+            <Analytics filteredData={filteredData} />
           )}
         </div>
       </div>

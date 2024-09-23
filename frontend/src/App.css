@@ -10,13 +10,19 @@
 }
 
 .min-vh-94 {
-  min-height: 605px;
+  min-height: 570px;
   height: 100%;
 }
 
 .w-2 {
   width: 8px;
 }
+
+.scrollable {
+  height: 570px;
+  overflow-y: auto;
+}
+
 /* common css */
 
 /*  */
@@ -102,7 +108,7 @@
   box-sizing: border-box;
   border: 1px solid #ffffff;
   border-radius: 5px;
-  background: transparent;
+  background: #c3c3c3c4;
 }
 
 input:focus,
