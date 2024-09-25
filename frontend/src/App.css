@@ -9,8 +9,8 @@
   background-color: #dfdfdf;
 }
 
-.min-vh-94 {
-  min-height: 570px;
+.max-height {
+  max-height: 600px;
   height: 100%;
 }
 
@@ -19,7 +19,7 @@
 }
 
 .scrollable {
-  height: 570px;
+  height: 600px;
   overflow-y: auto;
 }
 

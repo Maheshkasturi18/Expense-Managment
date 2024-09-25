@@ -33,6 +33,8 @@ export default function Sidebar() {
   const [dataList, setDataList] = useState([]);
   const [filter, setFilter] = useState("Default");
   const [filteredData, setFilteredData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
 
   const handleonChange = (e) => {
     const { value, name } = e.target;
@@ -179,13 +181,34 @@ export default function Sidebar() {
     }
 
     setFilteredData(filtered);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  // Calculate the rows to be displayed on the current page
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const currentData = filteredData.slice(startIndex, endIndex);
+
+  // Handle next and previous page buttons
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   return (
-    <div className="container-fluid bg-green overflow-auto">
+    <div className="container-fluid bg-green overflow-auto ">
       <div className="row flex-nowrap p-lg-3 p-md-2 p-1 gap-1">
         <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-gold ">
-          <div className="d-flex flex-column align-items-center align-items-sm-start px-lg-3 px-2 pt-2 text-white min-vh-94">
+          <div className="d-flex flex-column align-items-center align-items-sm-start px-lg-3 px-2 pt-2 text-white max-height">
             <Link
               to="/"
               className="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none"
@@ -355,40 +378,77 @@ export default function Sidebar() {
                 {isAuthenticated ? (
                   <tbody>
                     {filteredData.length > 0 ? (
-                      filteredData.map((el) => (
-                        <tr key={el.id}>
-                          <td>{el.date}</td>
-                          <td>{el.amount}</td>
-                          <td>{el.type}</td>
-                          <td>{el.category}</td>
-                          <td>{el.refrence}</td>
-                          <td>
-                            <button className="bg-transparent border-0 text-primary">
-                              <i
-                                className="fa-solid fa-pen"
-                                onClick={() => handleEdit(el)}
-                              ></i>
-                            </button>
-                            <button className="bg-transparent border-0 text-danger">
-                              <i
-                                className="fa-solid fa-trash"
-                                onClick={() => handleDelete(el.userEmail)}
-                              ></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))
+                      filteredData
+                        .slice(
+                          (currentPage - 1) * rowsPerPage,
+                          currentPage * rowsPerPage
+                        )
+                        .map((el) => (
+                          <tr key={el.id}>
+                            <td>{el.date}</td>
+                            <td>{el.amount}</td>
+                            <td>{el.type}</td>
+                            <td>{el.category}</td>
+                            <td>{el.refrence}</td>
+                            <td>
+                              <button className="bg-transparent border-0 text-primary">
+                                <i
+                                  className="fa-solid fa-pen"
+                                  onClick={() => handleEdit(el)}
+                                ></i>
+                              </button>
+                              <button className="bg-transparent border-0 text-danger">
+                                <i
+                                  className="fa-solid fa-trash"
+                                  onClick={() => handleDelete(el.userEmail)}
+                                ></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
                     ) : (
-                      <p className="text-center">No data available</p>
+                      <p className="text-center">Add data </p>
                     )}
                   </tbody>
                 ) : (
-                  <div style={{ textAlign: "center" }}>Login to see data</div>
+                  <div className="text-center">Login to see data</div>
                 )}
               </table>
+
+              {totalPages > 1 && (
+                <div className="pagination-controls text-center mt-5">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                  >
+                    Prev
+                  </button>
+                  <span className="mx-2">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
-            <Analytics filteredData={filteredData} />
+            <>
+              {isAuthenticated ? (
+                filteredData.length > 0 ? (
+                  <Analytics filteredData={filteredData} />
+                ) : (
+                  <div className="text-center">Add data</div>
+                )
+              ) : (
+                <div className="text-center">Login to see data</div>
+              )}
+            </>
           )}
         </div>
       </div>
