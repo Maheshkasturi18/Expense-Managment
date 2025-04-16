@@ -3,6 +3,14 @@
   background: linear-gradient(to left, #8e9395, #cfdae3);
 }
 
+.h-100vh{
+  height: 100vh;
+}
+
+.h-init{
+  height: inherit;
+}
+
 .bg-gold {
   border: 2px solid floralwhite;
   border-radius: 20px;
@@ -10,7 +18,7 @@
 }
 
 .max-height {
-  max-height: 600px;
+  /* max-height: 600px; */
   height: 100%;
 }
 
@@ -19,7 +27,7 @@
 }
 
 .scrollable {
-  height: 600px;
+  /* height: 600px; */
   overflow-y: auto;
 }
 

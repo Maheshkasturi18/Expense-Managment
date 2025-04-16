@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 import { Analytics } from "./Analytics";
 import { useAuth0 } from "@auth0/auth0-react";
 
-axios.defaults.baseURL = "https://expense-managment-clqt.onrender.com/";
+axios.defaults.baseURL =
+  "https://expense-managment-clqt.onrender.com/" || "http://localhost:8090/";
 
 export default function Sidebar() {
   // auth0
@@ -164,20 +165,26 @@ export default function Sidebar() {
     const now = new Date();
     let filtered = dataList;
 
-    if (selectedFilter === "last 1 week") {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(now.getDate() - 7);
-      filtered = dataList.filter((item) => new Date(item.date) >= oneWeekAgo);
-    } else if (selectedFilter === "last 1 month") {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setMonth(now.getMonth() - 1);
-      filtered = dataList.filter((item) => new Date(item.date) >= oneMonthAgo);
-    } else if (selectedFilter === "last 1 year") {
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(now.getFullYear() - 1);
-      filtered = dataList.filter((item) => new Date(item.date) >= oneYearAgo);
-    } else {
-      filtered = dataList;
+    switch (selectedFilter) {
+      case "last 1 week":
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(now.getDate() - 7);
+        filtered = dataList.filter((item) => new Date(item.date) >= oneWeekAgo);
+        break;
+      case "last 1 month":
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(now.getMonth() - 1);
+        filtered = dataList.filter(
+          (item) => new Date(item.date) >= oneMonthAgo
+        );
+        break;
+      case "last 1 year":
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(now.getFullYear() - 1);
+        filtered = dataList.filter((item) => new Date(item.date) >= oneYearAgo);
+        break;
+      default:
+        filtered = dataList;
     }
 
     setFilteredData(filtered);
@@ -205,8 +212,8 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="container-fluid bg-green overflow-auto ">
-      <div className="row flex-nowrap p-lg-3 p-md-2 p-1 gap-1">
+    <div className="container-fluid bg-green overflow-auto h-100vh">
+      <div className="row flex-nowrap p-lg-3 p-md-2 p-1 gap-1 h-init">
         <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-gold ">
           <div className="d-flex flex-column align-items-center align-items-sm-start px-lg-3 px-2 pt-2 text-white max-height">
             <Link
@@ -377,20 +384,16 @@ export default function Sidebar() {
 
                 {isAuthenticated ? (
                   <tbody>
-                    {filteredData.length > 0 ? (
-                      filteredData
-                        .slice(
-                          (currentPage - 1) * rowsPerPage,
-                          currentPage * rowsPerPage
-                        )
-                        .map((el) => (
-                          <tr key={el.id}>
-                            <td>{el.date}</td>
-                            <td>{el.amount}</td>
-                            <td>{el.type}</td>
-                            <td>{el.category}</td>
-                            <td>{el.refrence}</td>
-                            <td>
+                    {currentData.length > 0 ? (
+                      currentData.map((el) => (
+                        <tr key={el.id}>
+                          <td>{el.date}</td>
+                          <td>{el.amount}</td>
+                          <td>{el.type}</td>
+                          <td>{el.category}</td>
+                          <td>{el.refrence}</td>
+                          <td>
+                            <>
                               <button className="bg-transparent border-0 text-primary">
                                 <i
                                   className="fa-solid fa-pen"
@@ -403,15 +406,26 @@ export default function Sidebar() {
                                   onClick={() => handleDelete(el.userEmail)}
                                 ></i>
                               </button>
-                            </td>
-                          </tr>
-                        ))
+                            </>
+                          </td>
+                        </tr>
+                      ))
                     ) : (
-                      <p className="text-center">Add data </p>
+                      <tr>
+                        <td colSpan="6" className="text-center">
+                          No data available
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 ) : (
-                  <div className="text-center">Login to see data</div>
+                  <tfoot>
+                    <tr>
+                      <td colSpan="6" className="text-center">
+                        Login to see data
+                      </td>
+                    </tr>
+                  </tfoot>
                 )}
               </table>
 

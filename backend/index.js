@@ -4,7 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 app.use(cors());
 app.use(express.json());
-const PORT = process.env.Port || 8000;
+const PORT = process.env.Port || 8090;
 require("dotenv").config();
 
 mongoose
@@ -33,6 +33,10 @@ const ExpenseSchema = new mongoose.Schema(
 );
 
 const expenseModel = mongoose.model("expenses", ExpenseSchema);
+
+app.get("/working", (req, res) => {
+  res.send("Hello from the backend");
+});
 
 // read data
 app.get("/", async (req, res) => {
@@ -79,7 +83,7 @@ app.put("/update", async (req, res) => {
 // delete data
 app.delete("/delete/:userEmail", async (req, res) => {
   try {
-    const userEmail = req.params;
+    const { userEmail } = req.params;
     const data = await expenseModel.deleteOne({ userEmail });
     res.json({
       success: true,
