@@ -101,6 +101,7 @@ export default function Sidebar() {
     if (isAuthenticated) {
       getFetchData();
     }
+    // eslint-disable-next-line
   }, [isAuthenticated]);
 
   // console.log("datalist", dataList);

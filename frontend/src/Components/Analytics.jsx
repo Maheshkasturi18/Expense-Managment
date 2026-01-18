@@ -64,6 +64,7 @@ export const Analytics = ({ filteredData }) => {
 
   const [typeChartData, setTypeChartData] = useState(null);
   const [categoryChartData, setCategoryChartData] = useState(null);
+  // eslint-disable-next-line
   const [lineChartData, setLineChartData] = useState(null);
 
   const formatAmount = (amount) => {
@@ -219,6 +220,7 @@ export const Analytics = ({ filteredData }) => {
 
     return () => {
       window.removeEventListener("resize", updateChartData);
+      // eslint-disable-next-line
     };
   }, [filteredData]);
 
