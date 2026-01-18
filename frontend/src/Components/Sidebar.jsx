@@ -63,7 +63,11 @@ export default function Sidebar() {
   // create data
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.email) {
+      alert("User not authenticated");
+      return;
+    }
+    
     try {
       const formDataWithUserEmail = { ...formData, userEmail: user.email };
       const data = await axios.post("/create", formDataWithUserEmail);
@@ -82,6 +86,8 @@ export default function Sidebar() {
 
   // get data
   const getFetchData = useCallback(async () => {
+    if (!user || !user.email) return; // Guard clause
+    
     try {
       const response = await axios.get("/", {
         params: { userEmail: user.email },
@@ -95,7 +101,7 @@ export default function Sidebar() {
       console.log(err);
       alert("Fetching issue");
     }
-  }, [user.email]);
+  }, [user?.email]); // Optional chaining for safety
 
   useEffect(() => {
     if (isAuthenticated) {
