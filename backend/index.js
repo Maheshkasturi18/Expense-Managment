@@ -42,6 +42,9 @@ app.get("/working", (req, res) => {
 app.get("/", async (req, res) => {
   try {
     const { userEmail } = req.query;
+    if (!userEmail) {
+      return res.status(400).json({ error: "userEmail is required" });
+    }
     const expenses = await expenseModel.find({ userEmail });
     res.json({ success: true, data: expenses });
   } catch (err) {

@@ -4,9 +4,11 @@ import { Form } from "./Form";
 import { Link } from "react-router-dom";
 import { Analytics } from "./Analytics";
 import { useAuth0 } from "@auth0/auth0-react";
+import CountUp from "react-countup";
 
-axios.defaults.baseURL =
-  "https://expense-managment-clqt.onrender.com/" || "http://localhost:8090/";
+axios.defaults.baseURL = "http://localhost:8090/";
+
+// "https://expense-managment-clqt.onrender.com/" ||
 
 export default function Sidebar() {
   // auth0
@@ -33,6 +35,8 @@ export default function Sidebar() {
 
   const [dataList, setDataList] = useState([]);
   const [filter, setFilter] = useState("Default");
+  const [typeFilter, setTypeFilter] = useState("allType");
+  const [catFilter, setCatFilter] = useState("Default");
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
@@ -68,7 +72,7 @@ export default function Sidebar() {
         setAddSection(false);
         alert(data.data.message);
         getFetchData();
-        console.log("data", data);
+        // console.log("data sent", data);
         resetFormData();
       }
     } catch (error) {
@@ -86,7 +90,7 @@ export default function Sidebar() {
       if (response.data.success) {
         setDataList(response.data.data);
         setFilteredData(response.data.data);
-        console.log(response.data.data);
+        // console.log("data received",response.data.data);
       }
     } catch (err) {
       console.log(err);
@@ -99,6 +103,25 @@ export default function Sidebar() {
       getFetchData();
     }
   }, [isAuthenticated]);
+
+  // console.log("datalist", dataList);
+
+  // calc. of total transactions
+  const totalTransaction = dataList.length;
+  // console.log("totalTransaction", totalTransaction);
+  // calc. of total income
+  const totalIncome = dataList
+    .filter((item) => item.type === "Income")
+    .reduce((acc, totalprice) => acc + totalprice.amount, 0);
+  // console.log("totalIncome", totalIncome);
+  // calc. of total expense
+  const totalExpense = dataList
+    .filter((item) => item.type === "Expense")
+    .reduce((acc, totalprice) => acc + totalprice.amount, 0);
+  // console.log("totalExpense", totalExpense);
+  // calc. of current balance
+  const currentBalance = totalIncome - totalExpense;
+  // console.log("currentBalance", currentBalance);
 
   // delete
   const handleDelete = async (userEmail) => {
@@ -122,7 +145,7 @@ export default function Sidebar() {
       if (response.data.success) {
         getFetchData();
         alert(response.data.message);
-        console.log("updated", response.data);
+        // console.log("updated", response.data);
         setEditSection(false);
       }
     } catch (error) {
@@ -191,12 +214,64 @@ export default function Sidebar() {
     setCurrentPage(1);
   };
 
+  // type filter logic
+  const handletypeFilterChange = (event) => {
+    const selectedtypeFilter = event.target.value;
+    setTypeFilter(selectedtypeFilter);
+    applytypeFilter(selectedtypeFilter);
+  };
+
+  const applytypeFilter = (selectedtypeFilter) => {
+    let filtered = dataList;
+
+    switch (selectedtypeFilter) {
+      case "income":
+        filtered = dataList.filter((item) => item);
+        break;
+      case "expense":
+        filtered = dataList.filter((item) => item);
+        break;
+      default:
+        filtered = dataList;
+    }
+
+    setFilteredData(filtered);
+    setCurrentPage(1);
+  };
+
+  // category filter logic
+  const handlecatFilterChange = (event) => {
+    const selectedcatFilter = event.target.value;
+    setCatFilter(selectedcatFilter);
+    applycatFilter(selectedcatFilter);
+  };
+
+  const applycatFilter = (selectedcatFilter) => {
+    let filtered = dataList;
+
+    switch (selectedcatFilter) {
+      case "income":
+        filtered = dataList.filter((item) => item);
+        break;
+      case "expense":
+        filtered = dataList.filter((item) => item);
+        break;
+      default:
+        filtered = dataList;
+    }
+
+    setFilteredData(filtered);
+    setCurrentPage(1);
+  };
+
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   // Calculate the rows to be displayed on the current page
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const currentData = filteredData.slice(startIndex, endIndex);
+
+  // console.log("currentData", currentData);
 
   // Handle next and previous page buttons
   const handleNextPage = () => {
@@ -211,43 +286,59 @@ export default function Sidebar() {
     }
   };
 
+  // console.log("setDataList", setDataList);
+  // console.log("setFilteredData", setFilteredData);
+
   return (
-    <div className="container-fluid bg-green overflow-auto h-100vh">
-      <div className="row flex-nowrap p-lg-3 p-md-2 p-1 gap-1 h-init">
-        <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-gold ">
-          <div className="d-flex flex-column align-items-center align-items-sm-start px-lg-3 px-2 pt-2 text-white max-height">
+    <div className="container-fluid overflow-auto h-100vh">
+      <div className="row flex-nowrap h-init border-r-4 ">
+        {/* Sidebar */}
+        <div className="col-auto col-md-3 col-xl-2 py-3 px-2 px-md-3 border-end ">
+          <div className="d-flex flex-column align-items-center align-items-sm-start  text-white max-height gap-4">
+            {/* logo */}
             <Link
               to="/"
-              className="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none"
+              className="d-flex align-items-center mb-md-0 w-100 text-white text-decoration-none"
             >
+              {/* Desktop */}
               <span className="fs-5 d-none d-md-block text-black fw-semibold">
-                E<span className="text-danger">x</span>pense Tracker
+                E
+                <span className="text-danger">
+                  <i className="fa-brands fa-xing"></i>
+                </span>
+                pense Tracker
               </span>
 
+              {/* mobile */}
               <span className="fs-5 d-md-none d-block text-black fw-semibold">
-                E<span className="text-danger">T</span>
+                <span className="text-danger">
+                  <i className="fa-brands fa-xing"></i>
+                </span>
+                T
               </span>
             </Link>
+
+            {/* Routes */}
             <ul
-              className="nav nav-pills flex-column mb-auto   mt-2 align-items-center align-items-sm-start"
+              className="nav nav-pills flex-column mb-auto align-items-center gap-2 align-items-sm-start w-100"
               id="menu"
             >
-              <li>
+              {/* Dashboard & Analytics Page Routes */}
+              <li className="w-100">
                 <ul
-                  className="collapse show nav flex-column ms-1"
+                  className="collapse show nav flex-column gap-2"
                   id="submenu1"
                   data-bs-parent="#menu"
                 >
-                  <li className="w-100">
+                  <li>
                     <h6
-                      className={`nav-link px-0 ${
-                        viewData === "table" ? "active-icon" : "inactive-icon"
-                      }`}
+                      className={`nav-link px-2 ${viewData === "table" ? "active-icon" : "inactive-icon"
+                        }`}
                       onClick={() => {
                         setViewData("table");
                       }}
                     >
-                      <i className="fa-solid fa-table-columns "></i>
+                      <i className="fa-solid fa-table-columns"></i>
                       <span className="d-none d-sm-inline  ms-2 fw-semibold">
                         Dashboard
                       </span>
@@ -255,26 +346,26 @@ export default function Sidebar() {
                   </li>
                   <li>
                     <h6
-                      className={`nav-link px-0 ${
-                        viewData === "chart" ? "active-icon" : "inactive-icon"
-                      }`}
+                      className={`nav-link px-2 ${viewData === "chart" ? "active-icon" : "inactive-icon"
+                        }`}
                       onClick={() => {
                         setViewData("chart");
                       }}
                     >
                       <i className="fa-solid fa-chart-line "></i>
                       <span className="d-none d-sm-inline ms-2 fw-semibold">
-                        Chart
+                        Analytics
                       </span>
                     </h6>
                   </li>
                 </ul>
               </li>
 
+              {/* logout -- login btns */}
               {isAuthenticated ? (
-                <li>
+                <li className="w-100">
                   <button
-                    className=" btn px-0"
+                    className=" btn px-2"
                     onClick={() =>
                       logout({
                         logoutParams: { returnTo: window.location.origin },
@@ -283,19 +374,19 @@ export default function Sidebar() {
                   >
                     <i className="fa-solid fa-power-off text-danger"></i>
                     <span className="d-none d-sm-inline text-black ms-2 fw-semibold">
-                      Log Out
+                      Sign Out
                     </span>
                   </button>
                 </li>
               ) : (
-                <li>
+                <li className="w-100">
                   <button
-                    className=" btn px-0"
+                    className="btn px-2"
                     onClick={() => loginWithRedirect()}
                   >
                     <i className="fa-solid fa-power-off text-danger"></i>
                     <span className="d-none d-sm-inline text-black ms-2 fw-semibold">
-                      Log In
+                      Sign In
                     </span>
                   </button>
                 </li>
@@ -310,11 +401,10 @@ export default function Sidebar() {
                   aria-expanded="false"
                 >
                   <img
-                    src="man.png"
-                    alt="login-icon"
-                    width="40"
-                    height="40"
-                    className="rounded-circle"
+                    src="user-icon.png"
+                    alt="user-icon"
+                    width="25"
+                    height="25"
                   />
                   <span className="d-none d-sm-inline mx-1 text-black fw-semibold">
                     {user.nickname}
@@ -324,30 +414,27 @@ export default function Sidebar() {
             )}
           </div>
         </div>
-        <div className="col ms-lg-3 ms-md-2 px-md-4 px-2 py-3 content  scrollable">
-          <div className="d-flex justify-content-between align-items-center">
-            <select
-              name=""
-              id=""
-              className="bg-transparent p-1 p-md-2 filter"
-              value={filter}
-              onChange={handleFilterChange}
-            >
-              <option value="Default">Default</option>
-              <option value="last 1 week">last 1 week</option>
-              <option value="last 1 month">last 1 month</option>
-              <option value="last 1 year">last 1 year</option>
-            </select>
 
-            <button
-              className="btn px-3 py-1 border border-2 border-white  rounded-4"
-              onClick={handlebutton}
-            >
-              Add
-            </button>
-          </div>
+        {/* Main Page */}
+        <div className="col px-md-4 px-2  py-3  scrollable bg-f7">
+          {/* add new transaction btn */}
+          {isAuthenticated && (
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h4 className="m-0">
+                {viewData === "table" ? "Dashboard" : "Analytics"}
+              </h4>
 
-          {/* modal - form */}
+              <button
+                className="btn px-2 px-md-3 py-1 border border-0 box-shadow-sm rounded-2 bg-white"
+                onClick={handlebutton}
+              >
+                <i className="fa-solid fa-plus me-1 me-md-2 fw-normal"></i> Add
+                New
+              </button>
+            </div>
+          )}
+
+          {/* add modal - form */}
           {addSection && (
             <Form
               handleSubmit={handleSubmit}
@@ -357,6 +444,7 @@ export default function Sidebar() {
             />
           )}
 
+          {/* edit modal - form */}
           {editSection && (
             <Form
               handleSubmit={handleUpdate}
@@ -366,103 +454,278 @@ export default function Sidebar() {
             />
           )}
 
-          {/*  */}
+          {/* dynamically rendering pages, onload Dashbaord table is visible */}
 
-          {viewData === "table" ? (
-            <div className="tableContainer overflow-auto">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Type</th>
-                    <th>Category</th>
-                    <th>Reference</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-
-                {isAuthenticated ? (
-                  <tbody>
-                    {currentData.length > 0 ? (
-                      currentData.map((el) => (
-                        <tr key={el.id}>
-                          <td>{el.date}</td>
-                          <td>{el.amount}</td>
-                          <td>{el.type}</td>
-                          <td>{el.category}</td>
-                          <td>{el.refrence}</td>
-                          <td>
-                            <>
-                              <button className="bg-transparent border-0 text-primary">
-                                <i
-                                  className="fa-solid fa-pen"
-                                  onClick={() => handleEdit(el)}
-                                ></i>
-                              </button>
-                              <button className="bg-transparent border-0 text-danger">
-                                <i
-                                  className="fa-solid fa-trash"
-                                  onClick={() => handleDelete(el.userEmail)}
-                                ></i>
-                              </button>
-                            </>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="text-center">
-                          No data available
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                ) : (
-                  <tfoot>
-                    <tr>
-                      <td colSpan="6" className="text-center">
-                        Login to see data
-                      </td>
-                    </tr>
-                  </tfoot>
-                )}
-              </table>
-
-              {totalPages > 1 && (
-                <div className="pagination-controls text-center mt-5">
-                  <button
-                    className="btn btn-secondary"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                  >
-                    Prev
-                  </button>
-                  <span className="mx-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
+          {isAuthenticated ? (
+            viewData === "table" ? (
+              // dashboard page
+              <div className="tableContainer overflow-hidden p-md-2">
+                {/* dashboard overview */}
+                <div className="row gap-3 gap-lg-4 mb-5 mx-lg-2">
+                  <div className="d-flex flex-row gap-3 flex-md-column col-12 col-md-4 col-lg-2 flex-grow-1 bg-white px-4 py-3 rounded-2 table-box-shadow">
+                    <div>
+                      <i class="fa-solid fa-book p-3 bg-warning-subtle text-warning rounded-3"></i>
+                    </div>
+                    <div>
+                      <h6 className="text-secondary fs-13 mb-2">
+                        Total Transactions
+                      </h6>
+                      <h4>
+                        <CountUp
+                          start={0}
+                          end={totalTransaction}
+                          duration={2.75}
+                          separator=" "
+                        />
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="d-flex flex-row gap-3 flex-md-column col-12 col-md-4 col-lg-2 flex-grow-1 bg-white px-4 py-3 rounded-2 table-box-shadow">
+                    <div>
+                      <i className="fa-solid fa-indian-rupee-sign p-3 bg-primary-subtle text-primary rounded-3"></i>
+                    </div>
+                    <div>
+                      <h6 className="text-secondary fs-13 mb-2">
+                        Current Balance
+                      </h6>
+                      <h4>
+                        <CountUp
+                          start={0}
+                          end={currentBalance}
+                          duration={2.75}
+                          separator=","
+                          decimal="."
+                          prefix="₹"
+                        />
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="d-flex flex-row gap-3 flex-md-column col-12 col-md-4 col-lg-2 flex-grow-1 bg-white px-4 py-3 rounded-2 table-box-shadow">
+                    <div>
+                      <i className="fa-solid fa-arrow-trend-up p-3 bg-success-subtle rounded-3 text-success"></i>
+                    </div>
+                    <div>
+                      <h6 className="text-secondary fs-13 mb-2">Income</h6>
+                      <h4>
+                        <CountUp
+                          start={0}
+                          end={totalIncome}
+                          duration={2.75}
+                          separator=","
+                          decimal="."
+                          prefix="₹"
+                        />
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="d-flex flex-row gap-3 flex-md-column col-12 col-md-4 col-lg-2 flex-grow-1 bg-white px-4 py-3 rounded-2 table-box-shadow">
+                    <div>
+                      <i className="fa-solid fa-arrow-trend-down p-3 bg-danger-subtle text-danger rounded-3"></i>
+                    </div>
+                    <div>
+                      <h6 className="text-secondary fs-13 mb-2">Expenses</h6>
+                      <h4>
+                        {" "}
+                        <CountUp
+                          start={0}
+                          end={totalExpense}
+                          duration={2.75}
+                          separator=","
+                          decimal="."
+                          prefix="₹"
+                        />
+                      </h4>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-          ) : (
-            <>
-              {isAuthenticated ? (
-                filteredData.length > 0 ? (
+
+                <div className="bg-white rounded-2 table-box-shadow">
+                  {/* Sort Filter */}
+                  <div className="d-flex flex-wrap gap-2 gap-md-4 justify-content-md-end align-items-center p-4 border-bottom">
+                    <select
+                      name="typeFilter"
+                      id="typeFilter"
+                      className="px-2 py-1 border border-0 rounded-2 bg-f7 flex-grow-1 flex-md-grow-0"
+                      value={typeFilter}
+                      onChange={handletypeFilterChange}
+                    >
+                      <option value="allType">All Types</option>
+                      <option value="income">Income</option>
+                      <option value="expense">Expense</option>
+                    </select>
+
+                    <select
+                      name="catFilter"
+                      id="catFilter"
+                      className="px-2 py-1 border border-0 rounded-2 bg-f7 flex-grow-1 flex-md-grow-0"
+                      value={catFilter}
+                      onChange={handlecatFilterChange}
+                    >
+                      <option value="Default">All Categories</option>
+                      <option value="Salary">Salary</option>
+                      <option value="Investment">Investment</option>
+                      <option value="Stocks">Stocks</option>
+                      <option value="Fees">Fees</option>
+                      <option value="Groceries">Groceries</option>
+                      <option value="Health">Health</option>
+                      <option value="Shopping">Shopping</option>
+                      <option value="Food">Food</option>
+                      <option value="Other">Other</option>
+                    </select>
+
+                    <select
+                      name="sortFilter"
+                      id="sortFilter"
+                      className="px-2 py-1 border border-0 rounded-2 bg-f7 flex-grow-1 flex-md-grow-0"
+                      value={filter}
+                      onChange={handleFilterChange}
+                    >
+                      <option value="Default">Default</option>
+                      <option value="last 1 week">last 1 week</option>
+                      <option value="last 1 month">last 1 month</option>
+                      <option value="last 1 year">last 1 year</option>
+                    </select>
+                  </div>
+
+                  <div className="overflow-auto">
+                    <table className="w-100">
+                      <thead>
+                        <tr className="bg-f7">
+                          <th>DATE</th>
+                          <th>CATEGORY</th>
+                          <th>DESCRIPTION</th>
+                          <th>AMOUNT</th>
+                          <th>TYPE</th>
+                          <th>ACTIONS</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {currentData.length > 0 ? (
+                          currentData.map((el) => (
+                            <tr key={el.id}>
+                              <td>
+                                {el.date ? new Date(el.date).toLocaleDateString("en-GB") : '-'}
+                              </td>
+                              <td>{el.category}</td>
+                              <td>{el.refrence}</td>
+                              <td>
+                                {el.type === "Income" ? (
+                                  <span className="text-success">
+                                    ₹{el.amount}
+                                  </span>
+                                ) : (
+                                  <span className="text-danger">
+                                    ₹{el.amount}
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                {el.type === "Income" ? (
+                                  <span className="text-success me-2">
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                  </span>
+                                ) : (
+                                  <span className="text-danger me-2">
+                                    <i class="fa-solid fa-arrow-down"></i>
+                                  </span>
+                                )}
+                                {el.type}
+                              </td>
+                              <td>
+                                <>
+                                  <button className="bg-transparent border-0 text-secondary me-2 p-1">
+                                    <i
+                                      className="fa-solid fa-pen"
+                                      onClick={() => handleEdit(el)}
+                                    ></i>
+                                  </button>
+                                  <button className="bg-transparent border-0 text-danger p-1">
+                                    <i
+                                      className="fa-solid fa-trash"
+                                      onClick={() => handleDelete(el.userEmail)}
+                                    ></i>
+                                  </button>
+                                </>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="6" className="text-center">
+                              <div className="mb-1 fs-1">
+                                <i className="fa-regular fa-face-sad-tear"></i>
+                              </div>
+                              <h4>Oops!! No Data Available</h4>
+                              <p>
+                                Please add atleast one Data to see Dashboard
+                              </p>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="pagination-controls text-center mt-5">
+                    <button
+                      className="btn btn-secondary"
+                      onClick={handlePreviousPage}
+                      disabled={currentPage === 1}
+                    >
+                      Prev
+                    </button>
+                    <span className="mx-2">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Analytics Page
+              <>
+                {filteredData.length > 0 ? (
                   <Analytics filteredData={filteredData} />
                 ) : (
-                  <div className="text-center">Add data</div>
-                )
-              ) : (
-                <div className="text-center">Login to see data</div>
-              )}
-            </>
+                  <div className="d-flex flex-column justify-content-center align-items-center mx-auto h-100 text-center ">
+                    <div className="mb-1 fs-1">
+                      <i className="fa-regular fa-face-sad-tear"></i>
+                    </div>
+                    <h4>Oops!! No Data Available</h4>
+                    <p>Please add atleast one Data to see Analytics</p>
+                  </div>
+                )}
+              </>
+            )
+          ) : (
+            <div className="w-50 d-flex flex-column justify-content-center align-items-center mx-auto h-100 text-center">
+              <i className="fa-solid fa-lock p-3 bg-dark-subtle mb-3 rounded-5"></i>
+
+              <h4 className="mb-3">Unlock Your Financial Insights</h4>
+
+              <p>
+                Sign in to view your personalized dashboard, track expenses, and
+                analyze your spending patterns.
+              </p>
+
+              <button
+                className="btn px-3 bg-dark-subtle mt-3"
+                onClick={() => loginWithRedirect()}
+              >
+                <span className="text-black fw-semibold">
+                  Sign In to Continue
+                </span>
+              </button>
+            </div>
           )}
         </div>
       </div>

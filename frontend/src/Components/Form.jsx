@@ -4,23 +4,29 @@ export const Form = ({ handleSubmit, handleonChange, handleClose, rest }) => {
   return (
     <div className="form-container">
       <div className="form-popup d-block" id="myForm ">
-        <form action="/" onSubmit={handleSubmit} className="p-lg-3 p-md-2 ">
-          <div className="border-0 ">
-            <button
-              type="button"
-              className="btn-close border-0 "
-              onClick={handleClose}
-            ></button>
-          </div>
+        <h5 className="mb-0 px-lg-4 px-3 py-3">Add Transaction</h5>
+        <form
+          action="/"
+          onSubmit={handleSubmit}
+          className="p-lg-4 p-3 border-top border-secondary-subtle"
+        >
+          <button
+            type="button"
+            className="btn-close border-0 "
+            onClick={handleClose}
+          ></button>
           <div>
             <div className="mb-lg-3 mb-md-2 mb-1 d-grid">
               <label htmlFor="amount" className=" mb-1">
-                Amount
+                Amount (₹)
               </label>
               <input
-                type="text"
+                type="number"
                 id="amount"
                 name="amount"
+                min="1"
+                max="10"
+                placeholder="Enter your Amount in ₹"
                 className="px-2 py-1 m-0"
                 onChange={handleonChange}
                 value={rest.amount}
@@ -96,6 +102,7 @@ export const Form = ({ handleSubmit, handleonChange, handleClose, rest }) => {
                 type="text"
                 name="refrence"
                 id="refrence"
+                placeholder="Description or Reference"
                 className="px-2 py-1 m-0"
                 required
                 onChange={handleonChange}
@@ -104,9 +111,17 @@ export const Form = ({ handleSubmit, handleonChange, handleClose, rest }) => {
             </div>
           </div>
 
-          <div className="d-grid justify-content-end align-items-center ">
+          <div className="d-flex gap-3 justify-content-end align-items-center mt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="btn btn-danger"
+            >
+              Cancel
+            </button>
+
             <button type="submit" className="btn btn-secondary">
-              Save
+              Save Transaction
             </button>
           </div>
         </form>

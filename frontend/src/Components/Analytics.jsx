@@ -224,7 +224,7 @@ export const Analytics = ({ filteredData }) => {
 
   return (
     <>
-      <div className="row py-4 justify-content-between ">
+      <div className="row p-4 justify-content-between rounded bg-e5 mb-4">
         {/* Doughnut Chart for Type */}
 
         <h5 className="mb-4">Analytics based on type :-</h5>
@@ -255,7 +255,7 @@ export const Analytics = ({ filteredData }) => {
         </div>
       </div>
 
-      <div className="row py-4 justify-content-between ">
+      <div className="row p-4 justify-content-between bg-e5">
         <h5 className="mb-4">Analytics based on category :-</h5>
         <div className="col-lg-4 col-md-6 col-12">
           <div className="analytics mb-4">
