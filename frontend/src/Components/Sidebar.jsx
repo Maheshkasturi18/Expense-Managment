@@ -6,9 +6,8 @@ import { Analytics } from "./Analytics";
 import { useAuth0 } from "@auth0/auth0-react";
 import CountUp from "react-countup";
 
-axios.defaults.baseURL = "http://localhost:8090/";
-
-// "https://expense-managment-clqt.onrender.com/" ||
+axios.defaults.baseURL =
+  "https://expense-managment-clqt.onrender.com/" || "http://localhost:8090/";
 
 export default function Sidebar() {
   // auth0
@@ -332,8 +331,9 @@ export default function Sidebar() {
                 >
                   <li>
                     <h6
-                      className={`nav-link px-2 ${viewData === "table" ? "active-icon" : "inactive-icon"
-                        }`}
+                      className={`nav-link px-2 ${
+                        viewData === "table" ? "active-icon" : "inactive-icon"
+                      }`}
                       onClick={() => {
                         setViewData("table");
                       }}
@@ -346,8 +346,9 @@ export default function Sidebar() {
                   </li>
                   <li>
                     <h6
-                      className={`nav-link px-2 ${viewData === "chart" ? "active-icon" : "inactive-icon"
-                        }`}
+                      className={`nav-link px-2 ${
+                        viewData === "chart" ? "active-icon" : "inactive-icon"
+                      }`}
                       onClick={() => {
                         setViewData("chart");
                       }}
@@ -605,7 +606,11 @@ export default function Sidebar() {
                           currentData.map((el) => (
                             <tr key={el.id}>
                               <td>
-                                {el.date ? new Date(el.date).toLocaleDateString("en-GB") : '-'}
+                                {el.date
+                                  ? new Date(el.date).toLocaleDateString(
+                                      "en-GB"
+                                    )
+                                  : "-"}
                               </td>
                               <td>{el.category}</td>
                               <td>{el.refrence}</td>
