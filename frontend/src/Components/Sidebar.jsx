@@ -1,4 +1,4 @@
-import { React, useState, useEffect , useCallback} from "react";
+import { React, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Form } from "./Form";
 import { Link } from "react-router-dom";
@@ -6,8 +6,7 @@ import { Analytics } from "./Analytics";
 import { useAuth0 } from "@auth0/auth0-react";
 import CountUp from "react-countup";
 
-axios.defaults.baseURL =
-  "https://expense-managment-clqt.onrender.com/" || "http://localhost:8090/";
+axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
 export default function Sidebar() {
   // auth0
@@ -67,7 +66,7 @@ export default function Sidebar() {
       alert("User not authenticated");
       return;
     }
-    
+
     try {
       const formDataWithUserEmail = { ...formData, userEmail: user.email };
       const data = await axios.post("/create", formDataWithUserEmail);
@@ -80,16 +79,14 @@ export default function Sidebar() {
       }
     } catch (error) {
       console.log(error);
-      alert("Fetching issue");
+      alert("Issue in adding data");
     }
   };
 
   // get data
   const getFetchData = useCallback(async () => {
-    if (!user || !user.email) return; // Guard clause
-    
     try {
-      const response = await axios.get("/", {
+      const response = await axios.get("/get-user", {
         params: { userEmail: user.email },
       });
       if (response.data.success) {
@@ -99,7 +96,7 @@ export default function Sidebar() {
       }
     } catch (err) {
       console.log(err);
-      alert("Fetching issue");
+      alert("Fetching user data issue");
     }
   }, [user?.email]); // Optional chaining for safety
 
@@ -108,7 +105,7 @@ export default function Sidebar() {
       getFetchData();
     }
     // eslint-disable-next-line
-  }, [isAuthenticated , getFetchData]);
+  }, [isAuthenticated, getFetchData]);
 
   // console.log("datalist", dataList);
 
@@ -130,16 +127,16 @@ export default function Sidebar() {
   // console.log("currentBalance", currentBalance);
 
   // delete
-  const handleDelete = async (userEmail) => {
+  const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`/delete/${userEmail}`);
+      const response = await axios.delete(`/delete/${id}`);
       if (response.data.success) {
         getFetchData();
         alert(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      alert("Fetching issue");
+      alert("error in deleting data");
     }
   };
 
@@ -156,7 +153,7 @@ export default function Sidebar() {
       }
     } catch (error) {
       console.log(error);
-      alert("Fetching issue");
+      alert("error in updating data");
     }
   };
 
@@ -472,7 +469,7 @@ export default function Sidebar() {
                 <div className="row gap-3 gap-lg-4 mb-5 mx-lg-2">
                   <div className="d-flex flex-row gap-3 flex-md-column col-12 col-md-4 col-lg-2 flex-grow-1 bg-white px-4 py-3 rounded-2 table-box-shadow">
                     <div>
-                      <i class="fa-solid fa-book p-3 bg-warning-subtle text-warning rounded-3"></i>
+                      <i className="fa-solid fa-book p-3 bg-warning-subtle text-warning rounded-3"></i>
                     </div>
                     <div>
                       <h6 className="text-secondary fs-13 mb-2">
@@ -611,7 +608,7 @@ export default function Sidebar() {
                       <tbody>
                         {currentData.length > 0 ? (
                           currentData.map((el) => (
-                            <tr key={el.id}>
+                            <tr key={el._id}>
                               <td>
                                 {el.date
                                   ? new Date(el.date).toLocaleDateString(
@@ -635,11 +632,11 @@ export default function Sidebar() {
                               <td>
                                 {el.type === "Income" ? (
                                   <span className="text-success me-2">
-                                    <i class="fa-solid fa-arrow-up"></i>
+                                    <i className="fa-solid fa-arrow-up"></i>
                                   </span>
                                 ) : (
                                   <span className="text-danger me-2">
-                                    <i class="fa-solid fa-arrow-down"></i>
+                                    <i className="fa-solid fa-arrow-down"></i>
                                   </span>
                                 )}
                                 {el.type}
@@ -655,7 +652,7 @@ export default function Sidebar() {
                                   <button className="bg-transparent border-0 text-danger p-1">
                                     <i
                                       className="fa-solid fa-trash"
-                                      onClick={() => handleDelete(el.userEmail)}
+                                      onClick={() => handleDelete(el._id)}
                                     ></i>
                                   </button>
                                 </>

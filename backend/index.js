@@ -39,13 +39,17 @@ app.get("/working", (req, res) => {
 });
 
 // read data
-app.get("/", async (req, res) => {
+app.get("/get-user", async (req, res) => {
   try {
     const { userEmail } = req.query;
     if (!userEmail) {
       return res.status(400).json({ error: "userEmail is required" });
     }
-    const expenses = await expenseModel.find({ userEmail });
+    const expenses = await expenseModel
+      .find({ userEmail })
+      .sort({ createdAt: -1 });
+
+    // console.log("expenses", expenses);
     res.json({ success: true, data: expenses });
   } catch (err) {
     console.error(err);
@@ -68,7 +72,7 @@ app.post("/create", async (req, res) => {
 // update data
 app.put("/update", async (req, res) => {
   try {
-    const { userEmail, ...rest } = req.body;
+    const { userEmail, _id, ...rest } = req.body; // Exclude _id from update
     const data = await expenseModel.findOneAndUpdate({ userEmail }, rest, {
       new: true,
     });
@@ -84,10 +88,10 @@ app.put("/update", async (req, res) => {
 });
 
 // delete data
-app.delete("/delete/:userEmail", async (req, res) => {
+app.delete("/delete/:id", async (req, res) => {
   try {
-    const { userEmail } = req.params;
-    const data = await expenseModel.deleteOne({ userEmail });
+    const { id } = req.params;
+    const data = await expenseModel.deleteOne({ _id: id });
     res.json({
       success: true,
       message: "Data deleted successfully",

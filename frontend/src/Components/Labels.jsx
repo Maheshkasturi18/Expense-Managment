@@ -13,7 +13,7 @@ export default function Labels({ combinedData }) {
 function LabelComponent({ data }) {
   if (!data) return null;
 
-  console.log("data", data);
+  // console.log("data", data);
 
   return (
     <div className="d-flex justify-content-between">

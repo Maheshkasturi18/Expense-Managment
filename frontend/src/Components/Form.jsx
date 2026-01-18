@@ -25,7 +25,7 @@ export const Form = ({ handleSubmit, handleonChange, handleClose, rest }) => {
                 id="amount"
                 name="amount"
                 min="1"
-                max="10"
+                max="100000000"
                 placeholder="Enter your Amount in ₹"
                 className="px-2 py-1 m-0"
                 onChange={handleonChange}
