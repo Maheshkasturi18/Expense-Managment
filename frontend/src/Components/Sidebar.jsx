@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect , useCallback} from "react";
 import axios from "axios";
 import { Form } from "./Form";
 import { Link } from "react-router-dom";
@@ -81,7 +81,7 @@ export default function Sidebar() {
   };
 
   // get data
-  const getFetchData = async () => {
+  const getFetchData = useCallback(async () => {
     try {
       const response = await axios.get("/", {
         params: { userEmail: user.email },
@@ -95,14 +95,14 @@ export default function Sidebar() {
       console.log(err);
       alert("Fetching issue");
     }
-  };
+  }, [user.email]);
 
   useEffect(() => {
     if (isAuthenticated) {
       getFetchData();
     }
     // eslint-disable-next-line
-  }, [isAuthenticated]);
+  }, [isAuthenticated , getFetchData]);
 
   // console.log("datalist", dataList);
 
